@@ -1,123 +1,179 @@
 import React, { useState } from 'react';
 import { supabase } from '../services/supabase';
 
-const GoogleIcon = () => (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" xmlns="http://www.w3.org/2000/svg">
-        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-    </svg>
-);
+// --- Sub-components ---
 
-// Animated background shapes
 const BgShapes = () => (
     <>
-        {/* Gradient orbs */}
         <div style={{
             position: 'absolute', top: '-20%', left: '-15%',
             width: '600px', height: '600px',
             background: 'radial-gradient(circle, rgba(219,39,119,0.15) 0%, transparent 70%)',
-            borderRadius: '50%',
-            pointerEvents: 'none',
-            animation: 'float1 8s ease-in-out infinite',
+            borderRadius: '50%', pointerEvents: 'none',
+            animation: 'authFloat1 8s ease-in-out infinite',
         }} />
         <div style={{
             position: 'absolute', bottom: '-20%', right: '-15%',
             width: '500px', height: '500px',
             background: 'radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)',
-            borderRadius: '50%',
-            pointerEvents: 'none',
-            animation: 'float2 10s ease-in-out infinite',
+            borderRadius: '50%', pointerEvents: 'none',
+            animation: 'authFloat2 10s ease-in-out infinite',
         }} />
         <div style={{
-            position: 'absolute', top: '40%', right: '20%',
+            position: 'absolute', top: '35%', right: '18%',
             width: '300px', height: '300px',
-            background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)',
-            borderRadius: '50%',
-            pointerEvents: 'none',
-            animation: 'float3 12s ease-in-out infinite',
+            background: 'radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 70%)',
+            borderRadius: '50%', pointerEvents: 'none',
+            animation: 'authFloat3 12s ease-in-out infinite',
         }} />
-
-        {/* Subtle grid */}
         <div style={{
             position: 'absolute', inset: 0,
-            backgroundImage: `linear-gradient(rgba(148,163,184,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.06) 1px, transparent 1px)`,
+            backgroundImage:
+                'linear-gradient(rgba(148,163,184,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.05) 1px, transparent 1px)',
             backgroundSize: '40px 40px',
             pointerEvents: 'none',
         }} />
-
         <style>{`
-      @keyframes float1 {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        33% { transform: translate(30px, -20px) scale(1.05); }
-        66% { transform: translate(-20px, 15px) scale(0.98); }
+      @keyframes authFloat1 {
+        0%,100%{transform:translate(0,0) scale(1);}
+        33%{transform:translate(30px,-20px) scale(1.05);}
+        66%{transform:translate(-20px,15px) scale(0.98);}
       }
-      @keyframes float2 {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        33% { transform: translate(-25px, 30px) scale(1.03); }
-        66% { transform: translate(20px, -20px) scale(0.97); }
+      @keyframes authFloat2 {
+        0%,100%{transform:translate(0,0) scale(1);}
+        33%{transform:translate(-25px,30px) scale(1.03);}
+        66%{transform:translate(20px,-20px) scale(0.97);}
       }
-      @keyframes float3 {
-        0%, 100% { transform: translate(0, 0); }
-        50% { transform: translate(-15px, 25px); }
+      @keyframes authFloat3 {
+        0%,100%{transform:translate(0,0);}
+        50%{transform:translate(-15px,25px);}
       }
-      @keyframes shimmer {
-        0% { background-position: -200% center; }
-        100% { background-position: 200% center; }
+      @keyframes authShimmer {
+        0%{background-position:-200% center;}
+        100%{background-position:200% center;}
       }
-      @keyframes pulse-ring {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.7; transform: scale(1.02); }
+      @keyframes authSpinSlow {
+        from{transform:rotate(0deg);}
+        to{transform:rotate(360deg);}
       }
-      @keyframes spin-slow {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+      @keyframes authFadeUp {
+        from{opacity:0;transform:translateY(20px);}
+        to{opacity:1;transform:translateY(0);}
       }
-      @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(24px); }
-        to { opacity: 1; transform: translateY(0); }
+      .auth-input:focus {
+        outline: none;
+        border-color: rgba(219,39,119,0.7) !important;
+        box-shadow: 0 0 0 3px rgba(219,39,119,0.15) !important;
       }
+      .auth-input::placeholder { color: rgba(255,255,255,0.2); }
+      .auth-btn-primary:hover:not(:disabled) {
+        opacity: 0.92;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 30px rgba(219,39,119,0.45) !important;
+      }
+      .auth-btn-primary:active:not(:disabled) { transform: scale(0.98); }
+      .auth-toggle-btn:hover { color: #f472b6 !important; }
     `}</style>
     </>
 );
 
-// Feature badge
-const FeatureBadge = ({ icon, text, delay }: { icon: string; text: string; delay: string }) => (
-    <div style={{
-        display: 'flex', alignItems: 'center', gap: '8px',
-        padding: '8px 14px',
-        background: 'rgba(255,255,255,0.05)',
-        border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: '100px',
-        color: 'rgba(255,255,255,0.75)',
-        fontSize: '12px',
-        fontWeight: 500,
-        backdropFilter: 'blur(8px)',
-        animation: `fadeInUp 0.6s ease-out ${delay} both`,
-    }}>
-        <span style={{ fontSize: '14px' }}>{icon}</span>
-        <span>{text}</span>
+const InputField = ({
+    label, icon, type, value, onChange, placeholder, required,
+}: {
+    label: string; icon: string; type: string;
+    value: string; onChange: (v: string) => void;
+    placeholder: string; required?: boolean;
+}) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <label style={{ color: 'rgba(255,255,255,0.55)', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            {label}
+        </label>
+        <div style={{ position: 'relative' }}>
+            <span style={{
+                position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
+                fontSize: '16px', pointerEvents: 'none', userSelect: 'none',
+            }}>{icon}</span>
+            <input
+                className="auth-input"
+                type={type}
+                value={value}
+                onChange={e => onChange(e.target.value)}
+                placeholder={placeholder}
+                required={required}
+                style={{
+                    width: '100%', boxSizing: 'border-box',
+                    padding: '13px 14px 13px 42px',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '12px',
+                    color: 'white', fontSize: '14px',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                }}
+            />
+        </div>
     </div>
 );
 
+// --- Main Component ---
+
 export const Auth: React.FC = () => {
+    const [isLogin, setIsLogin] = useState(true);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
 
-    const handleGoogleLogin = async () => {
+    const resetMessages = () => { setErrorMsg(''); setSuccessMsg(''); };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        resetMessages();
+
+        if (!isLogin && password !== confirmPassword) {
+            setErrorMsg('As senhas não coincidem. Verifique e tente novamente.');
+            return;
+        }
+        if (!isLogin && password.length < 6) {
+            setErrorMsg('A senha deve ter pelo menos 6 caracteres.');
+            return;
+        }
+
         setLoading(true);
-        setErrorMsg('');
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: window.location.origin,
-            },
-        });
-        if (error) {
-            setErrorMsg(error.message);
+        try {
+            if (isLogin) {
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+            } else {
+                const { error } = await supabase.auth.signUp({ email, password });
+                if (error) throw error;
+                setSuccessMsg('Conta criada! Verifique seu e-mail para confirmar e depois faça o login.');
+                setIsLogin(true);
+                setPassword('');
+                setConfirmPassword('');
+            }
+        } catch (err: any) {
+            const msg = err.message || '';
+            if (msg.includes('Invalid login credentials')) {
+                setErrorMsg('E-mail ou senha incorretos. Verifique e tente novamente.');
+            } else if (msg.includes('User already registered')) {
+                setErrorMsg('Este e-mail já possui uma conta. Faça login.');
+            } else if (msg.includes('Email not confirmed')) {
+                setErrorMsg('Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada.');
+            } else {
+                setErrorMsg(msg || 'Ocorreu um erro. Tente novamente.');
+            }
+        } finally {
             setLoading(false);
         }
+    };
+
+    const switchMode = () => {
+        setIsLogin(v => !v);
+        resetMessages();
+        setPassword('');
+        setConfirmPassword('');
     };
 
     return (
@@ -131,28 +187,19 @@ export const Auth: React.FC = () => {
         }}>
             <BgShapes />
 
-            {/* Left panel - branding */}
+            {/* ── Left branding panel (desktop only) ── */}
             <div style={{
+                flex: 1, flexDirection: 'column', justifyContent: 'center',
+                alignItems: 'flex-start', padding: '80px',
+                position: 'relative', zIndex: 10,
                 display: 'none',
-                flex: 1,
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'flex-start',
-                padding: '80px',
-                position: 'relative',
-                zIndex: 10,
-            }} className="auth-left-panel">
-                {/* Logo mark */}
-                <div style={{
-                    display: 'flex', alignItems: 'center', gap: '12px',
-                    marginBottom: '60px',
-                    animation: 'fadeInUp 0.6s ease-out both',
-                }}>
+            }} className="auth-left">
+                {/* Logo */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '56px', animation: 'authFadeUp 0.6s ease-out both' }}>
                     <div style={{
                         width: '44px', height: '44px',
                         background: 'linear-gradient(135deg, #db2777, #9333ea)',
-                        borderRadius: '12px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                         boxShadow: '0 8px 32px rgba(219,39,119,0.35)',
                     }}>
                         <span style={{ color: 'white', fontWeight: 900, fontSize: '18px' }}>A</span>
@@ -162,93 +209,81 @@ export const Auth: React.FC = () => {
                     </span>
                 </div>
 
-                <div style={{ animation: 'fadeInUp 0.6s ease-out 0.1s both' }}>
+                {/* Headline */}
+                <div style={{ animation: 'authFadeUp 0.6s ease-out 0.1s both' }}>
                     <h1 style={{
-                        color: 'white', fontSize: '52px', fontWeight: 900,
-                        lineHeight: 1.05, letterSpacing: '-2px',
-                        marginBottom: '20px', maxWidth: '500px',
+                        color: 'white', fontSize: '50px', fontWeight: 900,
+                        lineHeight: 1.05, letterSpacing: '-2px', marginBottom: '20px', maxWidth: '480px',
                     }}>
                         Gerencie seu<br />
                         <span style={{
                             background: 'linear-gradient(90deg, #db2777, #9333ea, #db2777)',
                             backgroundSize: '200% auto',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            animation: 'shimmer 4s linear infinite',
+                            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                            animation: 'authShimmer 4s linear infinite',
                         }}>negócio</span> com<br />
                         inteligência.
                     </h1>
-                    <p style={{
-                        color: 'rgba(255,255,255,0.5)', fontSize: '16px',
-                        lineHeight: 1.7, maxWidth: '380px', marginBottom: '48px',
-                    }}>
+                    <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '15px', lineHeight: 1.7, maxWidth: '360px', marginBottom: '48px' }}>
                         Agendamentos, clientes, finanças e análises em um único lugar. Simples, rápido e poderoso.
                     </p>
                 </div>
 
-                <div style={{
-                    display: 'flex', flexWrap: 'wrap', gap: '10px',
-                    maxWidth: '420px',
-                }}>
-                    <FeatureBadge icon="📅" text="Agenda inteligente" delay="0.2s" />
-                    <FeatureBadge icon="💰" text="Controle financeiro" delay="0.3s" />
-                    <FeatureBadge icon="🤖" text="Analista com IA" delay="0.4s" />
-                    <FeatureBadge icon="📊" text="Relatórios detalhados" delay="0.5s" />
-                    <FeatureBadge icon="👥" text="Gestão de clientes" delay="0.6s" />
+                {/* Feature badges */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', maxWidth: '400px', animation: 'authFadeUp 0.6s ease-out 0.2s both' }}>
+                    {[
+                        { icon: '📅', text: 'Agenda inteligente' },
+                        { icon: '💰', text: 'Controle financeiro' },
+                        { icon: '🤖', text: 'Analista com IA' },
+                        { icon: '📊', text: 'Relatórios detalhados' },
+                        { icon: '👥', text: 'Gestão de clientes' },
+                    ].map(f => (
+                        <div key={f.text} style={{
+                            display: 'flex', alignItems: 'center', gap: '8px',
+                            padding: '8px 14px',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '100px',
+                            color: 'rgba(255,255,255,0.7)', fontSize: '12px', fontWeight: 500,
+                            backdropFilter: 'blur(8px)',
+                        }}>
+                            <span>{f.icon}</span><span>{f.text}</span>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Decorative stat cards */}
-                <div style={{
-                    display: 'flex', gap: '16px', marginTop: '60px',
-                    animation: 'fadeInUp 0.6s ease-out 0.7s both',
-                }}>
-                    {[
-                        { value: '3.2x', label: 'mais produtividade' },
-                        { value: '98%', label: 'satisfação dos usuários' },
-                    ].map((stat, i) => (
-                        <div key={i} style={{
+                {/* Stats */}
+                <div style={{ display: 'flex', gap: '16px', marginTop: '56px', animation: 'authFadeUp 0.6s ease-out 0.35s both' }}>
+                    {[{ value: '3.2x', label: 'mais produtividade' }, { value: '98%', label: 'satisfação dos usuários' }].map(s => (
+                        <div key={s.value} style={{
                             padding: '20px 24px',
                             background: 'rgba(255,255,255,0.04)',
                             border: '1px solid rgba(255,255,255,0.08)',
-                            borderRadius: '16px',
-                            backdropFilter: 'blur(12px)',
+                            borderRadius: '16px', backdropFilter: 'blur(12px)',
                         }}>
-                            <div style={{ color: '#db2777', fontSize: '28px', fontWeight: 900, letterSpacing: '-1px' }}>{stat.value}</div>
-                            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginTop: '4px' }}>{stat.label}</div>
+                            <div style={{ color: '#db2777', fontSize: '28px', fontWeight: 900, letterSpacing: '-1px' }}>{s.value}</div>
+                            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginTop: '4px' }}>{s.label}</div>
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* Right panel - login form */}
+            {/* ── Right form panel ── */}
             <div style={{
-                width: '100%',
-                maxWidth: '520px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '40px 24px',
-                position: 'relative',
-                zIndex: 10,
+                width: '100%', display: 'flex', flexDirection: 'column',
+                justifyContent: 'center', alignItems: 'center',
+                padding: '40px 24px', position: 'relative', zIndex: 10,
                 margin: '0 auto',
-            }} className="auth-right-panel">
+            }} className="auth-right">
 
-                <div style={{
-                    width: '100%',
-                    maxWidth: '400px',
-                    animation: 'fadeInUp 0.7s ease-out 0.1s both',
-                }}>
+                <div style={{ width: '100%', maxWidth: '400px', animation: 'authFadeUp 0.7s ease-out 0.1s both' }}>
+
                     {/* Mobile logo */}
-                    <div style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
-                        marginBottom: '48px',
-                    }} className="auth-logo-mobile">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '40px' }} className="auth-logo-mobile">
                         <div style={{
-                            width: '48px', height: '48px',
+                            width: '46px', height: '46px',
                             background: 'linear-gradient(135deg, #db2777, #9333ea)',
-                            borderRadius: '14px',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            borderRadius: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                             boxShadow: '0 8px 32px rgba(219,39,119,0.4)',
                         }}>
                             <span style={{ color: 'white', fontWeight: 900, fontSize: '20px' }}>A</span>
@@ -257,7 +292,7 @@ export const Auth: React.FC = () => {
                             <div style={{ color: 'white', fontSize: '22px', fontWeight: 800, letterSpacing: '-0.5px', lineHeight: 1 }}>
                                 Agenda<span style={{ color: '#db2777' }}>Simples</span>
                             </div>
-                            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', marginTop: '2px' }}>
+                            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '11px', marginTop: '2px' }}>
                                 Gestão profissional simplificada
                             </div>
                         </div>
@@ -267,151 +302,160 @@ export const Auth: React.FC = () => {
                     <div style={{
                         background: 'rgba(255,255,255,0.04)',
                         border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: '28px',
-                        padding: '40px 36px',
+                        borderRadius: '28px', padding: '36px 32px',
                         backdropFilter: 'blur(24px)',
-                        boxShadow: '0 32px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset',
+                        boxShadow: '0 32px 80px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05)',
                     }}>
+
                         {/* Heading */}
-                        <div style={{ marginBottom: '32px' }}>
-                            <h2 style={{
-                                color: 'white', fontSize: '28px', fontWeight: 800,
-                                letterSpacing: '-0.8px', marginBottom: '8px', lineHeight: 1.2,
-                            }}>
-                                Bem-vindo de volta 👋
+                        <div style={{ marginBottom: '28px' }}>
+                            <h2 style={{ color: 'white', fontSize: '26px', fontWeight: 800, letterSpacing: '-0.7px', marginBottom: '6px', lineHeight: 1.2 }}>
+                                {isLogin ? 'Bem-vindo de volta 👋' : 'Crie sua conta ✨'}
                             </h2>
-                            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '14px', lineHeight: 1.6 }}>
-                                Faça login para acessar seu painel de gestão.
+                            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', lineHeight: 1.6 }}>
+                                {isLogin
+                                    ? 'Faça login para acessar seu painel de gestão.'
+                                    : 'Preencha os dados abaixo para começar gratuitamente.'}
                             </p>
                         </div>
 
-                        {/* Error message */}
+                        {/* Messages */}
                         {errorMsg && (
                             <div style={{
-                                padding: '12px 16px',
+                                padding: '11px 14px', marginBottom: '18px',
                                 background: 'rgba(239,68,68,0.12)',
                                 border: '1px solid rgba(239,68,68,0.25)',
-                                borderRadius: '12px',
-                                color: '#fca5a5',
-                                fontSize: '13px',
-                                marginBottom: '20px',
+                                borderRadius: '10px', color: '#fca5a5', fontSize: '13px',
                             }}>
                                 ⚠️ {errorMsg}
                             </div>
                         )}
+                        {successMsg && (
+                            <div style={{
+                                padding: '11px 14px', marginBottom: '18px',
+                                background: 'rgba(34,197,94,0.12)',
+                                border: '1px solid rgba(34,197,94,0.25)',
+                                borderRadius: '10px', color: '#86efac', fontSize: '13px',
+                            }}>
+                                ✅ {successMsg}
+                            </div>
+                        )}
 
-                        {/* Google Button */}
-                        <button
-                            onClick={handleGoogleLogin}
-                            disabled={loading}
-                            style={{
-                                width: '100%', padding: '15px 20px',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
-                                background: loading
-                                    ? 'rgba(255,255,255,0.06)'
-                                    : 'rgba(255,255,255,0.95)',
-                                border: '1px solid rgba(255,255,255,0.15)',
-                                borderRadius: '14px',
-                                color: loading ? 'rgba(255,255,255,0.4)' : '#1e293b',
-                                fontSize: '15px', fontWeight: 700,
-                                cursor: loading ? 'not-allowed' : 'pointer',
-                                transition: 'all 0.2s ease',
-                                boxShadow: loading ? 'none' : '0 4px 20px rgba(0,0,0,0.3)',
-                                position: 'relative', overflow: 'hidden',
-                                letterSpacing: '-0.2px',
-                            }}
-                            onMouseOver={e => {
-                                if (!loading) {
-                                    (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
-                                    (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 8px 32px rgba(0,0,0,0.4)';
-                                }
-                            }}
-                            onMouseOut={e => {
-                                (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
-                                (e.currentTarget as HTMLButtonElement).style.boxShadow = loading ? 'none' : '0 4px 20px rgba(0,0,0,0.3)';
-                            }}
-                        >
-                            {loading ? (
-                                <>
-                                    <div style={{
-                                        width: '18px', height: '18px',
-                                        border: '2px solid rgba(255,255,255,0.2)',
-                                        borderTopColor: 'rgba(255,255,255,0.7)',
-                                        borderRadius: '50%',
-                                        animation: 'spin-slow 0.8s linear infinite',
-                                    }} />
-                                    <span>Redirecionando...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <GoogleIcon />
-                                    <span>Entrar com Google</span>
-                                </>
+                        {/* Form */}
+                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <InputField
+                                label="E-mail"
+                                icon="✉️"
+                                type="email"
+                                value={email}
+                                onChange={setEmail}
+                                placeholder="seu@email.com"
+                                required
+                            />
+                            <InputField
+                                label="Senha"
+                                icon="🔒"
+                                type="password"
+                                value={password}
+                                onChange={setPassword}
+                                placeholder="••••••••"
+                                required
+                            />
+                            {!isLogin && (
+                                <InputField
+                                    label="Confirmar Senha"
+                                    icon="🔑"
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={setConfirmPassword}
+                                    placeholder="••••••••"
+                                    required
+                                />
                             )}
-                        </button>
+
+                            {/* Submit */}
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="auth-btn-primary"
+                                style={{
+                                    marginTop: '6px',
+                                    width: '100%', padding: '14px',
+                                    background: 'linear-gradient(135deg, #db2777, #9333ea)',
+                                    border: 'none', borderRadius: '13px',
+                                    color: 'white', fontSize: '15px', fontWeight: 700,
+                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                    opacity: loading ? 0.7 : 1,
+                                    transition: 'all 0.2s ease',
+                                    boxShadow: '0 4px 20px rgba(219,39,119,0.3)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                    letterSpacing: '-0.2px',
+                                }}
+                            >
+                                {loading ? (
+                                    <>
+                                        <div style={{
+                                            width: '16px', height: '16px',
+                                            border: '2px solid rgba(255,255,255,0.3)',
+                                            borderTopColor: 'white', borderRadius: '50%',
+                                            animation: 'authSpinSlow 0.8s linear infinite',
+                                        }} />
+                                        <span>Aguarde...</span>
+                                    </>
+                                ) : (
+                                    <span>{isLogin ? '→ Entrar' : '→ Criar conta'}</span>
+                                )}
+                            </button>
+                        </form>
 
                         {/* Divider */}
-                        <div style={{
-                            display: 'flex', alignItems: 'center', gap: '12px',
-                            margin: '24px 0',
-                        }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '22px 0' }}>
                             <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
-                            <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '11px', fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                                Acesso seguro
+                            <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                {isLogin ? 'novo por aqui?' : 'já tem conta?'}
                             </span>
                             <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
                         </div>
 
-                        {/* Trust indicators */}
-                        <div style={{
-                            display: 'flex', justifyContent: 'center', gap: '20px',
-                            flexWrap: 'wrap',
-                        }}>
-                            {[
-                                { icon: '🔒', text: 'SSL criptografado' },
-                                { icon: '🛡️', text: 'Dados protegidos' },
-                                { icon: '⚡', text: 'Login rápido' },
-                            ].map((item, i) => (
-                                <div key={i} style={{
-                                    display: 'flex', alignItems: 'center', gap: '6px',
-                                    color: 'rgba(255,255,255,0.3)', fontSize: '11px',
-                                }}>
-                                    <span style={{ fontSize: '12px' }}>{item.icon}</span>
-                                    <span>{item.text}</span>
-                                </div>
-                            ))}
-                        </div>
+                        {/* Toggle */}
+                        <button
+                            onClick={switchMode}
+                            className="auth-toggle-btn"
+                            style={{
+                                width: '100%', padding: '12px',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '12px',
+                                color: 'rgba(255,255,255,0.55)', fontSize: '13px', fontWeight: 600,
+                                cursor: 'pointer', transition: 'color 0.2s',
+                            }}
+                        >
+                            {isLogin ? 'Criar minha conta agora →' : '← Já tenho conta, fazer login'}
+                        </button>
                     </div>
 
                     {/* Footer */}
-                    <p style={{
-                        textAlign: 'center', marginTop: '24px',
-                        color: 'rgba(255,255,255,0.2)', fontSize: '11px', lineHeight: 1.6,
-                    }}>
+                    <p style={{ textAlign: 'center', marginTop: '22px', color: 'rgba(255,255,255,0.18)', fontSize: '11px', lineHeight: 1.6 }}>
                         Ao entrar, você concorda com nossos{' '}
-                        <span style={{ color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>Termos de Uso</span>
+                        <span style={{ color: 'rgba(255,255,255,0.35)', cursor: 'pointer' }}>Termos de Uso</span>
                         {' '}e{' '}
-                        <span style={{ color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>Política de Privacidade</span>.
+                        <span style={{ color: 'rgba(255,255,255,0.35)', cursor: 'pointer' }}>Política de Privacidade</span>.
                     </p>
                 </div>
             </div>
 
-            {/* Responsive styles */}
+            {/* Responsive */}
             <style>{`
         @media (min-width: 900px) {
-          .auth-left-panel {
-            display: flex !important;
-          }
-          .auth-right-panel {
+          .auth-left { display: flex !important; }
+          .auth-right {
             width: 480px !important;
             max-width: 480px !important;
             border-left: 1px solid rgba(255,255,255,0.06);
             background: rgba(0,0,0,0.2);
             margin: 0 !important;
           }
-          .auth-logo-mobile {
-            display: none !important;
-          }
+          .auth-logo-mobile { display: none !important; }
         }
       `}</style>
         </div>
