@@ -1,17 +1,18 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  User, 
-  ChevronDown, 
-  ChevronRight, 
-  Wallet, 
-  Receipt, 
-  Target, 
-  Settings, 
-  UserCircle, 
+import {
+  User,
+  ChevronDown,
+  ChevronRight,
+  Wallet,
+  Receipt,
+  Target,
+  Settings,
+  UserCircle,
   Briefcase
 } from 'lucide-react';
 import { ViewState } from '../types';
+import { supabase } from '../services/supabase';
 
 interface ProfileWidgetProps {
   activeTab: ViewState;
@@ -59,19 +60,19 @@ export const ProfileWidget: React.FC<ProfileWidgetProps> = ({ activeTab, onNavig
             <p className="text-sm font-black text-slate-800 dark:text-slate-100">Administrador</p>
           </div>
 
-          <MenuItem 
-            icon={UserCircle} 
-            label="Meu Perfil" 
+          <MenuItem
+            icon={UserCircle}
+            label="Meu Perfil"
             active={activeTab === ViewState.PROFILE}
-            onClick={() => handleNav(ViewState.PROFILE)} 
+            onClick={() => handleNav(ViewState.PROFILE)}
           />
-          <MenuItem 
-            icon={Settings} 
-            label="Configurações" 
+          <MenuItem
+            icon={Settings}
+            label="Configurações"
             active={activeTab === ViewState.SETTINGS}
-            onClick={() => handleNav(ViewState.SETTINGS)} 
+            onClick={() => handleNav(ViewState.SETTINGS)}
           />
-          
+
           <div className="mt-2 pt-2 border-t border-slate-50 dark:border-slate-800">
             <button
               onClick={() => setMgmtOpen(!mgmtOpen)}
@@ -86,18 +87,21 @@ export const ProfileWidget: React.FC<ProfileWidgetProps> = ({ activeTab, onNavig
 
             {mgmtOpen && (
               <div className="bg-slate-50 dark:bg-slate-800/50 mx-2 rounded-2xl overflow-hidden animate-slide-up mt-1 shadow-inner">
-                <SubMenuItem 
-                  icon={Receipt} 
-                  label="Financeiro" 
-                  active={activeTab === ViewState.FINANCE} 
-                  onClick={() => handleNav(ViewState.FINANCE)} 
+                <SubMenuItem
+                  icon={Receipt}
+                  label="Financeiro"
+                  active={activeTab === ViewState.FINANCE}
+                  onClick={() => handleNav(ViewState.FINANCE)}
                 />
               </div>
             )}
           </div>
 
           <div className="mt-4 px-4">
-            <button className="w-full py-2.5 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-xl text-[10px] font-black uppercase hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors">
+            <button
+              onClick={() => supabase.auth.signOut()}
+              className="w-full py-2.5 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-xl text-[10px] font-black uppercase hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors"
+            >
               Sair do Sistema
             </button>
           </div>

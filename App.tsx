@@ -12,31 +12,36 @@ import { InventoryManager } from './components/InventoryManager';
 import { ServiceManager } from './components/ServiceManager';
 import { LogoText } from './components/Logo';
 import { ProfileWidget } from './components/ProfileWidget';
-import { 
-  LayoutDashboard, 
-  Calendar as CalendarIcon, 
-  Users, 
-  Scissors, 
-  UserCheck, 
-  Package, 
-  DollarSign, 
-  Bot, 
-  Sun, 
-  Moon, 
-  Menu, 
+import {
+  LayoutDashboard,
+  Calendar as CalendarIcon,
+  Users,
+  Scissors,
+  UserCheck,
+  Package,
+  DollarSign,
+  Bot,
+  Sun,
+  Moon,
+  Menu,
   X,
   Clock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Auth } from './components/Auth';
+import { supabase } from './services/supabase';
+import { Session } from '@supabase/supabase-js';
 
 const App: React.FC = () => {
+  const [session, setSession] = useState<Session | null>(null);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<ViewState>(ViewState.DASHBOARD);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
     return savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
   });
-  
+
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [professionals, setProfessionals] = useState<Professional[]>([]);
@@ -81,55 +86,94 @@ const App: React.FC = () => {
   }, [isDarkMode]);
 
   useEffect(() => {
-    const savedData = localStorage.getItem('barber_data_v2');
-    if (savedData) {
-      const parsed = JSON.parse(savedData);
-      setAppointments(parsed.appointments || []);
-      setClients(parsed.clients || []);
-      setProfessionals(parsed.professionals || []);
-      setServices(parsed.services || []);
-      setProducts(parsed.products || []);
-      setFinancialRecords(parsed.financialRecords || []);
-      if (parsed.userProfile) setUserProfile(parsed.userProfile);
-      if (parsed.appSettings) setAppSettings(parsed.appSettings);
-    } else {
-      // Seed Data
-      const seedClients: Client[] = [
-        { id: 'C001', name: 'João Silva', phone: '11999999999', status: 'active', email: 'joao@email.com' },
-        { id: 'C002', name: 'Maria Oliveira', phone: '11888888888', status: 'active', email: 'maria@email.com' },
-      ];
-      const seedProfessionals: Professional[] = [
-        { id: 'P1', name: 'Ana Silva', specialty: 'Especialista em Tranças', phone: '11777777777', email: 'ana@studio.com', status: 'active' },
-        { id: 'P2', name: 'Carla Santos', specialty: 'Design de Sobrancelhas', phone: '11666666666', email: 'carla@studio.com', status: 'active' },
-      ];
-      const seedServices: Service[] = [
-        { id: 'S1', name: 'Corte Social', duration: 30, price: 50, category: 'Cabelo' },
-        { id: 'S2', name: 'Barba Completa', duration: 30, price: 40, category: 'Barba' },
-        { id: 'S3', name: 'Trança Boxeadora', duration: 120, price: 150, category: 'Trança' },
-      ];
-      const seedProducts: Product[] = [
-        { id: 'PR1', name: 'Pomada Modeladora', category: 'Venda', quantity: 15, minQuantity: 5, price: 35 },
-        { id: 'PR2', name: 'Óleo para Barba', category: 'Venda', quantity: 3, minQuantity: 5, price: 45 },
-      ];
-      const today = new Date().toISOString().split('T')[0];
-      const seedAppointments: Appointment[] = [
-        { id: 'A1', clientId: 'C001', professionalId: 'P1', serviceId: 'S1', date: today, startTime: '10:00', endTime: '10:30', status: 'Agendado', totalValue: 50 },
-        { id: 'A2', clientId: 'C002', professionalId: 'P2', serviceId: 'S3', date: today, startTime: '14:00', endTime: '16:00', status: 'Concluído', totalValue: 150 },
-      ];
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
 
-      setClients(seedClients);
-      setProfessionals(seedProfessionals);
-      setServices(seedServices);
-      setProducts(seedProducts);
-      setAppointments(seedAppointments);
-    }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('barber_data_v2', JSON.stringify({ 
+    if (!session?.user) {
+      setIsDataLoading(false);
+      return;
+    }
+
+    const loadData = async () => {
+      setIsDataLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('user_data')
+          .select('data')
+          .eq('user_id', session.user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error("Error loading data", error);
+        }
+
+        if (data && data.data) {
+          const parsed = data.data;
+          setAppointments(parsed.appointments || []);
+          setClients(parsed.clients || []);
+          setProfessionals(parsed.professionals || []);
+          setServices(parsed.services || []);
+          setProducts(parsed.products || []);
+          setFinancialRecords(parsed.financialRecords || []);
+          if (parsed.userProfile) setUserProfile(parsed.userProfile);
+          if (parsed.appSettings) setAppSettings(parsed.appSettings);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsDataLoading(false);
+      }
+    };
+
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session]);
+
+  const saveToSupabase = async () => {
+    if (!session?.user) return;
+    try {
+      const payload = {
+        appointments, clients, professionals, services, products, financialRecords, userProfile, appSettings
+      };
+
+      const { error: upsertError } = await supabase
+        .from('user_data')
+        .upsert({ user_id: session.user.id, data: payload, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+
+      if (upsertError) {
+        console.error('Error saving data:', upsertError);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (isDataLoading) return;
+
+    // Save to local storage as backup cache
+    localStorage.setItem('barber_data_v2', JSON.stringify({
       appointments, clients, professionals, services, products, financialRecords, userProfile, appSettings
     }));
-  }, [appointments, clients, professionals, services, products, financialRecords, userProfile, appSettings]);
+
+    const timeoutId = setTimeout(() => {
+      saveToSupabase();
+    }, 1000); // Debounce to avoid too many writes
+
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appointments, clients, professionals, services, products, financialRecords, userProfile, appSettings, isDataLoading]);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
@@ -139,7 +183,7 @@ const App: React.FC = () => {
   };
 
   const getPageTitle = (tab: ViewState) => {
-    switch(tab) {
+    switch (tab) {
       case ViewState.DASHBOARD: return 'Dashboard';
       case ViewState.CALENDAR: return 'Agendamento';
       case ViewState.CLIENTS: return 'Clientes';
@@ -152,6 +196,18 @@ const App: React.FC = () => {
       default: return tab;
     }
   };
+
+  if (isDataLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <div className="w-8 h-8 rounded-full border-4 border-accent border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <Auth />;
+  }
 
   return (
     <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950">
@@ -209,30 +265,30 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto px-4 lg:px-8 py-6 lg:py-8">
           <div className="max-w-7xl mx-auto pb-24 lg:pb-20">
             {activeTab === ViewState.DASHBOARD && (
-              <Dashboard 
-                appointments={appointments} 
-                clients={clients} 
-                products={products} 
-                financialRecords={financialRecords} 
+              <Dashboard
+                appointments={appointments}
+                clients={clients}
+                products={products}
+                financialRecords={financialRecords}
                 services={services}
                 professionals={professionals}
-                settings={appSettings} 
+                settings={appSettings}
                 userName={userProfile.name}
                 onNavigate={handleNavClick}
               />
             )}
             {activeTab === ViewState.CALENDAR && (
-              <CalendarView 
-                appointments={appointments} 
-                clients={clients} 
-                services={services} 
-                professionals={professionals} 
+              <CalendarView
+                appointments={appointments}
+                clients={clients}
+                services={services}
+                professionals={professionals}
                 products={products}
-                onAddAppointment={(a: Appointment) => setAppointments([...appointments, a])} 
+                onAddAppointment={(a: Appointment) => setAppointments([...appointments, a])}
                 onAddClient={(c: Client) => setClients(prev => [...prev, c])}
                 onUpdateAppointment={(u: Appointment) => {
                   setAppointments(appointments.map(a => a.id === u.id ? u : a));
-                  
+
                   // Automation: If appointment is completed
                   if (u.status === 'Concluído') {
                     // 1. Add to finance
@@ -247,7 +303,7 @@ const App: React.FC = () => {
                       type: 'income',
                       appointmentId: u.id
                     };
-                    
+
                     setFinancialRecords(prev => {
                       if (prev.some(r => r.appointmentId === u.id)) return prev;
                       return [...prev, newRecord];
@@ -270,46 +326,46 @@ const App: React.FC = () => {
               />
             )}
             {activeTab === ViewState.CLIENTS && (
-              <ClientManager 
-                clients={clients} 
+              <ClientManager
+                clients={clients}
                 appointments={appointments}
                 services={services}
-                onAddClient={c => setClients([...clients, c])} 
-                onUpdateClient={u => setClients(clients.map(c => c.id === u.id ? u : c))} 
-                onDeleteClient={id => setClients(clients.filter(c => c.id !== id))} 
+                onAddClient={c => setClients([...clients, c])}
+                onUpdateClient={u => setClients(clients.map(c => c.id === u.id ? u : c))}
+                onDeleteClient={id => setClients(clients.filter(c => c.id !== id))}
               />
             )}
             {activeTab === ViewState.SERVICES && (
-              <ServiceManager 
-                services={services} 
-                onAddService={s => setServices([...services, s])} 
-                onUpdateService={u => setServices(services.map(s => s.id === u.id ? u : s))} 
-                onDeleteService={id => setServices(services.filter(s => s.id !== id))} 
+              <ServiceManager
+                services={services}
+                onAddService={s => setServices([...services, s])}
+                onUpdateService={u => setServices(services.map(s => s.id === u.id ? u : s))}
+                onDeleteService={id => setServices(services.filter(s => s.id !== id))}
               />
             )}
             {activeTab === ViewState.INVENTORY && (
-              <InventoryManager 
-                products={products} 
-                onAddProduct={p => setProducts([...products, p])} 
-                onUpdateProduct={u => setProducts(products.map(p => p.id === u.id ? u : p))} 
-                onDeleteProduct={id => setProducts(products.filter(p => p.id !== id))} 
+              <InventoryManager
+                products={products}
+                onAddProduct={p => setProducts([...products, p])}
+                onUpdateProduct={u => setProducts(products.map(p => p.id === u.id ? u : p))}
+                onDeleteProduct={id => setProducts(products.filter(p => p.id !== id))}
               />
             )}
             {activeTab === ViewState.FINANCE && (
-              <FinancialManager 
-                financialRecords={financialRecords} 
-                onAdd={(r: FinancialRecord) => setFinancialRecords([...financialRecords, r])} 
-                onUpdate={(u: FinancialRecord) => setFinancialRecords(financialRecords.map(r => r.id === u.id ? u : r))} 
-                onDelete={(id: string) => setFinancialRecords(financialRecords.filter(r => r.id !== id))} 
+              <FinancialManager
+                financialRecords={financialRecords}
+                onAdd={(r: FinancialRecord) => setFinancialRecords([...financialRecords, r])}
+                onUpdate={(u: FinancialRecord) => setFinancialRecords(financialRecords.map(r => r.id === u.id ? u : r))}
+                onDelete={(id: string) => setFinancialRecords(financialRecords.filter(r => r.id !== id))}
                 appointments={appointments}
               />
             )}
             {activeTab === ViewState.AI_ANALYST && (
-              <AIAnalyst 
-                appointments={appointments} 
-                clients={clients} 
-                products={products} 
-                financialRecords={financialRecords} 
+              <AIAnalyst
+                appointments={appointments}
+                clients={clients}
+                products={products}
+                financialRecords={financialRecords}
               />
             )}
             {activeTab === ViewState.PROFILE && <ProfileView profile={userProfile} onSave={setUserProfile} />}
@@ -331,19 +387,18 @@ const App: React.FC = () => {
 };
 
 const MobileNavItem = ({ icon: Icon, active, onClick, isSpecial }: any) => (
-  <button 
-    onClick={onClick} 
-    className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all relative ${
-      active 
-        ? 'text-accent' 
-        : 'text-slate-400 hover:text-slate-600'
-    }`}
+  <button
+    onClick={onClick}
+    className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all relative ${active
+      ? 'text-accent'
+      : 'text-slate-400 hover:text-slate-600'
+      }`}
   >
     <div className={`p-2 rounded-lg ${active ? (isSpecial ? 'bg-accent text-white' : 'bg-accent/10 text-accent') : ''}`}>
       <Icon className="w-5 h-5" />
     </div>
     {active && (
-      <motion.div 
+      <motion.div
         layoutId="mobile-nav-indicator"
         className="absolute -bottom-1 w-1 h-1 bg-accent rounded-full"
       />
@@ -352,13 +407,12 @@ const MobileNavItem = ({ icon: Icon, active, onClick, isSpecial }: any) => (
 );
 
 const NavItem = ({ icon: Icon, label, active, onClick, isSpecial }: any) => (
-  <button 
-    onClick={onClick} 
-    className={`w-full flex items-center px-4 py-3 rounded-xl transition-all ${
-      active 
-        ? 'bg-accent text-white font-bold shadow-sm' 
-        : 'text-white/50 hover:text-white hover:bg-white/5'
-    } ${isSpecial ? 'bg-accent/20 text-accent' : ''}`}
+  <button
+    onClick={onClick}
+    className={`w-full flex items-center px-4 py-3 rounded-xl transition-all ${active
+      ? 'bg-accent text-white font-bold shadow-sm'
+      : 'text-white/50 hover:text-white hover:bg-white/5'
+      } ${isSpecial ? 'bg-accent/20 text-accent' : ''}`}
   >
     <Icon className={`w-5 h-5 shrink-0 ${active ? 'text-white' : 'text-inherit opacity-70'}`} />
     <span className="ml-3 text-sm tracking-tight">{label}</span>
