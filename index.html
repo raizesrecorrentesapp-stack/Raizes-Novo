@@ -1,84 +1,97 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Raízes Recorrentes</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100' height='100' rx='24' fill='%230F2A44' /%3E%3Cpath d='M30 35H70V45H30V35Z' fill='white' /%3E%3Cpath d='M30 55H60V65H30V55Z' fill='white' fill-opacity='0.8' /%3E%3C/svg%3E">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              simplefy: {
-                primary: '#0F2A44',
-                secondary: '#2B2E34',
-                bg: '#F4F6F8',
-                success: '#1E8E5A',
-                danger: '#C74A4A',
-              }
-            },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Agenda Simples</title>
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100' height='100' rx='24' fill='%230F2A44' /%3E%3Cpath d='M30 35H70V45H30V35Z' fill='white' /%3E%3Cpath d='M30 55H60V65H30V55Z' fill='white' fill-opacity='0.8' /%3E%3C/svg%3E">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            simplefy: {
+              primary: '#0F2A44',
+              secondary: '#2B2E34',
+              bg: '#F4F6F8',
+              success: '#1E8E5A',
+              danger: '#C74A4A',
             }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
           }
         }
       }
-    </script>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-      
-      * {
-        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 200ms;
-        -webkit-tap-highlight-color: transparent;
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    * {
+      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 200ms;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F4F6F8;
+    }
+
+    .dark body {
+      background-color: #020617;
+    }
+
+    /* Scrollbar refinements */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    .dark ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    @keyframes slide-up {
+      from {
+        transform: translateY(10px);
+        opacity: 0;
       }
 
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #F4F6F8;
+      to {
+        transform: translateY(0);
+        opacity: 1;
       }
+    }
 
-      .dark body {
-        background-color: #020617;
-      }
-
-      /* Scrollbar refinements */
-      ::-webkit-scrollbar {
-        width: 5px;
-        height: 5px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 10px;
-      }
-      .dark ::-webkit-scrollbar-thumb {
-        background: #1e293b;
-      }
-
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-
-      @keyframes slide-up {
-        from { transform: translateY(10px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-      }
-      .animate-slide-up {
-        animation: slide-up 0.3s ease-out forwards;
-      }
-    </style>
+    .animate-slide-up {
+      animation: slide-up 0.3s ease-out forwards;
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -92,10 +105,12 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="text-simplefy-secondary">
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+
+<body class="text-simplefy-secondary">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
 </html>

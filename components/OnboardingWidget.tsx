@@ -42,7 +42,7 @@ export const OnboardingWidget: React.FC<OnboardingWidgetProps> = ({
             title: 'Configure seu Perfil',
             description: 'Adicione seu nome para personalizar o sistema.',
             icon: UserCircle,
-            isCompleted: userProfile.name !== 'Gestora Raízes' && userProfile.name.trim() !== '',
+            isCompleted: userProfile.name !== 'Gestor Agenda Simples' && userProfile.name.trim() !== '',
             action: () => onNavigate(ViewState.PROFILE)
         },
         {

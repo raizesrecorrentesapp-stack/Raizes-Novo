@@ -50,9 +50,9 @@ const App: React.FC = () => {
   const [financialRecords, setFinancialRecords] = useState<FinancialRecord[]>([]);
 
   const [userProfile, setUserProfile] = useState<UserProfile>({
-    name: 'Gestora Raízes',
-    email: 'contato@raizesrecorrentes.com',
-    businessName: 'Raízes Recorrentes',
+    name: 'Gestor Agenda Simples',
+    email: 'contato@agendasimples.com',
+    businessName: 'Agenda Simples',
     currency: 'BRL',
     timezone: 'GMT-3 (Brasília)',
     startDate: new Date().toISOString().split('T')[0],
@@ -138,9 +138,9 @@ const App: React.FC = () => {
           setServices([]);
           setProducts([]);
           setFinancialRecords([]);
-          // Default profile keeps 'Gestora Raízes' to trigger step 1 of onboarding
+          // Default profile keeps 'Gestor Agenda Simples' to trigger step 1 of onboarding
           setUserProfile({
-            name: 'Gestora Raízes',
+            name: 'Gestor Agenda Simples',
             email: session.user.email || '',
             businessName: 'Meu Negócio',
             currency: 'BRL',

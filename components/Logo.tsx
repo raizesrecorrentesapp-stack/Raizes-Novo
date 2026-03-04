@@ -3,7 +3,7 @@ import React from 'react';
 
 export const Logo: React.FC<{ className?: string; size?: number }> = ({ className = "", size = 32 }) => {
   return (
-    <div 
+    <div
       className={`flex items-center justify-center bg-simplefy-primary rounded-xl shrink-0 ${className}`}
       style={{ width: size, height: size }}
     >
@@ -15,7 +15,7 @@ export const Logo: React.FC<{ className?: string; size?: number }> = ({ classNam
 export const LogoText: React.FC<{ className?: string }> = ({ className = "" }) => (
   <div className={`flex items-center gap-2 ${className}`}>
     <span className="font-normal text-xl tracking-tight text-white">
-      Raízes<span className="font-bold">Recorrentes</span>
+      Agenda<span className="font-bold">Simples</span>
     </span>
   </div>
 );
