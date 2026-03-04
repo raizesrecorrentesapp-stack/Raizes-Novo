@@ -92,9 +92,9 @@ export const OnboardingWidget: React.FC<OnboardingWidgetProps> = ({
     const progressPercentage = Math.round((completedCount / totalSteps) * 100);
     const isAllComplete = completedCount === totalSteps;
 
-    // Auto-hide if all complete after a delay, or just show a success message
-    if (isAllComplete && !isExpanded) {
-        return null; // Don't render once fully onboarded and collapsed
+    // Auto-hide if all complete
+    if (isAllComplete) {
+        return null;
     }
 
     return (
@@ -142,8 +142,8 @@ export const OnboardingWidget: React.FC<OnboardingWidgetProps> = ({
                                     key={step.id}
                                     onClick={step.action}
                                     className={`flex items-start gap-4 p-4 rounded-xl border transition-all cursor-pointer group hover:shadow-md ${step.isCompleted
-                                            ? 'bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30'
-                                            : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-accent/30 dark:hover:border-accent/30'
+                                        ? 'bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30'
+                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-accent/30 dark:hover:border-accent/30'
                                         }`}
                                 >
                                     <div className={`mt-0.5 shrink-0 transition-colors ${step.isCompleted ? 'text-emerald-500' : 'text-slate-300 dark:text-slate-600 group-hover:text-accent'}`}>
