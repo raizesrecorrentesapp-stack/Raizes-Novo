@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { Appointment, Client, Product, FinancialRecord, AppSettings, Service } from '../types';
-import { 
-  TrendingUp, 
-  Users, 
-  Calendar, 
-  Package, 
+import {
+  TrendingUp,
+  Users,
+  Calendar,
+  Package,
   DollarSign,
   Clock,
   AlertTriangle,
@@ -15,14 +15,15 @@ import {
   CheckCircle2,
   XCircle
 } from 'lucide-react';
+import { OnboardingWidget } from './OnboardingWidget';
 import { formatCurrency, formatDuration } from '../utils/calculations';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   AreaChart,
   Area,
@@ -43,10 +44,10 @@ interface DashboardProps {
   onNavigate: (tab: any) => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ 
-  appointments, 
-  clients, 
-  products, 
+export const Dashboard: React.FC<DashboardProps> = ({
+  appointments,
+  clients,
+  products,
   financialRecords,
   services,
   professionals,
@@ -67,7 +68,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   };
 
   const currentMonthName = now.toLocaleDateString('pt-BR', { month: 'long' });
-  
+
   const todayAppointments = appointments.filter(a => a.date === today);
   const monthAppointments = appointments.filter(a => {
     const d = new Date(a.date);
@@ -76,7 +77,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const completedMonthAppointments = monthAppointments.filter(a => a.status === 'Concluído');
   const lostMonthAppointments = monthAppointments.filter(a => a.status === 'Cancelado' || a.status === 'Faltou');
-  
+
   const monthlyRevenue = financialRecords
     .filter(r => {
       const d = new Date(r.date);
@@ -92,14 +93,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
     .reduce((acc, r) => acc + r.amount, 0);
 
   const netProfit = monthlyRevenue - monthlyExpenses;
-  
+
   const lowStockProducts = products.filter(p => p.quantity <= p.minQuantity);
-  
+
   const maintenanceClients = clients.filter(c => {
     const clientAppts = appointments
       .filter(a => a.clientId === c.id && a.status === 'Concluído')
       .sort((a, b) => b.date.localeCompare(a.date));
-    
+
     const lastAppt = clientAppts[0];
     if (!lastAppt) return false;
 
@@ -107,7 +108,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     const today = new Date();
     const diffTime = Math.abs(today.getTime() - lastDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     return diffDays > 30 && diffDays <= 45;
   });
 
@@ -131,6 +132,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="space-y-8 animate-slide-up">
+      <OnboardingWidget
+        userProfile={{ name: userName, email: '', businessName: '', currency: 'BRL', timezone: '', startDate: '', notes: '' }}
+        services={services}
+        products={products}
+        clients={clients}
+        appointments={appointments}
+        financialRecords={financialRecords}
+        onNavigate={onNavigate}
+      />
       {/* Welcome Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
         <div>
@@ -149,35 +159,35 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Header Stats */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <StatCard 
-          icon={DollarSign} 
-          label="Receita Mensal" 
-          value={formatCurrency(monthlyRevenue)} 
-          trend={`${currentMonthName.charAt(0).toUpperCase() + currentMonthName.slice(1)}`} 
+        <StatCard
+          icon={DollarSign}
+          label="Receita Mensal"
+          value={formatCurrency(monthlyRevenue)}
+          trend={`${currentMonthName.charAt(0).toUpperCase() + currentMonthName.slice(1)}`}
           color="text-accent"
           bg="bg-accent/10"
         />
-        <StatCard 
-          icon={CheckCircle2} 
-          label="Agendamentos Concluídos" 
-          value={completedMonthAppointments.length.toString()} 
-          trend="No Mês" 
+        <StatCard
+          icon={CheckCircle2}
+          label="Agendamentos Concluídos"
+          value={completedMonthAppointments.length.toString()}
+          trend="No Mês"
           color="text-emerald-600"
           bg="bg-emerald-50"
         />
-        <StatCard 
-          icon={XCircle} 
-          label="Agendamentos Perdidos" 
-          value={lostMonthAppointments.length.toString()} 
-          trend="No Mês" 
+        <StatCard
+          icon={XCircle}
+          label="Agendamentos Perdidos"
+          value={lostMonthAppointments.length.toString()}
+          trend="No Mês"
           color="text-red-600"
           bg="bg-red-50"
         />
-        <StatCard 
-          icon={TrendingUp} 
-          label="Lucro Líquido" 
-          value={formatCurrency(netProfit)} 
-          trend="No Mês" 
+        <StatCard
+          icon={TrendingUp}
+          label="Lucro Líquido"
+          value={formatCurrency(netProfit)}
+          trend="No Mês"
           color="text-indigo-600"
           bg="bg-indigo-50"
         />
@@ -198,14 +208,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <AreaChart data={appointmentsByDay}>
                 <defs>
                   <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--accent-color)" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="var(--accent-color)" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="var(--accent-color)" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="var(--accent-color)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} />
-                <Tooltip 
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
+                <Tooltip
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', backgroundColor: '#fff', color: '#1e293b' }}
                   itemStyle={{ fontSize: '11px', fontWeight: 'bold' }}
                   cursor={{ stroke: 'var(--accent-color)', strokeWidth: 1 }}
@@ -238,7 +248,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip 
+                      <Tooltip
                         formatter={(value: number) => formatCurrency(value)}
                         contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                       />
@@ -262,7 +272,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-full mb-4">
                   <TrendingUp className="w-8 h-8 text-slate-300" />
                 </div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Sem dados de receita<br/>para este mês</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Sem dados de receita<br />para este mês</p>
               </div>
             )}
           </div>
@@ -274,7 +284,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider">Próximos Agendamentos</h3>
-            <button 
+            <button
               onClick={() => onNavigate('CALENDAR')}
               className="text-[10px] font-bold text-accent uppercase tracking-widest hover:underline"
             >
@@ -295,16 +305,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       <div>
                         <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{client?.name}</p>
                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">
-                          {service?.name} • {appt.startTime} 
+                          {service?.name} • {appt.startTime}
                           {service && <span className="ml-2 text-slate-400">({formatDuration(service.duration)})</span>}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{formatCurrency(appt.totalValue)}</p>
-                      <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                        appt.status === 'Agendado' ? 'bg-accent/10 text-accent' : 'bg-emerald-100 text-emerald-700'
-                      }`}>
+                      <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase ${appt.status === 'Agendado' ? 'bg-accent/10 text-accent' : 'bg-emerald-100 text-emerald-700'
+                        }`}>
                         {appt.status}
                       </span>
                     </div>
@@ -321,7 +330,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider">Alertas de Estoque</h3>
-            <button 
+            <button
               onClick={() => onNavigate('INVENTORY')}
               className="text-[10px] font-bold text-accent uppercase tracking-widest hover:underline"
             >

@@ -128,6 +128,26 @@ const App: React.FC = () => {
           setFinancialRecords(parsed.financialRecords || []);
           if (parsed.userProfile) setUserProfile(parsed.userProfile);
           if (parsed.appSettings) setAppSettings(parsed.appSettings);
+        } else {
+          // New User - start completely fresh
+          setAppointments([]);
+          setClients([]);
+          setProfessionals([
+            { id: 'P1', name: 'Atendimento', specialty: 'Geral', status: 'active' }
+          ]);
+          setServices([]);
+          setProducts([]);
+          setFinancialRecords([]);
+          // Default profile keeps 'Gestora Raízes' to trigger step 1 of onboarding
+          setUserProfile({
+            name: 'Gestora Raízes',
+            email: session.user.email || '',
+            businessName: 'Meu Negócio',
+            currency: 'BRL',
+            timezone: 'America/Sao_Paulo',
+            startDate: new Date().toISOString().split('T')[0],
+            notes: ''
+          });
         }
       } catch (err) {
         console.error(err);
