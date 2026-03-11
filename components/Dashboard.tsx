@@ -153,15 +153,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(Number(e.target.value))}
-              className="bg-transparent text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer hover:text-accent transition-colors underline decoration-dashed decoration-slate-300 dark:decoration-slate-600 underline-offset-4"
+              className="bg-transparent text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer hover:text-accent transition-colors underline decoration-dashed decoration-slate-300 dark:decoration-slate-600 underline-offset-4 uppercase font-bold tracking-[0.2em] text-[10px] sm:text-xs"
               style={{ appearance: 'none', WebkitAppearance: 'none' }}
               title="Escolher mês"
             >
               {Array.from({ length: 12 }, (_, i) => {
                 const date = new Date(selectedYear, i, 1);
                 return (
-                  <option key={i} value={i} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
-                    {date.toLocaleDateString('pt-BR', { month: 'long' })}
+                  <option key={i} value={i} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 uppercase tracking-normal">
+                    {date.toLocaleDateString('pt-BR', { month: 'long' }).toUpperCase()}
                   </option>
                 );
               })}
@@ -169,7 +169,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="bg-transparent text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer hover:text-accent transition-colors underline decoration-dashed decoration-slate-300 dark:decoration-slate-600 underline-offset-4"
+              className="bg-transparent text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer hover:text-accent transition-colors underline decoration-dashed decoration-slate-300 dark:decoration-slate-600 underline-offset-4 uppercase font-bold tracking-[0.2em] text-[10px] sm:text-xs"
               style={{ appearance: 'none', WebkitAppearance: 'none' }}
               title="Escolher ano"
             >
