@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Appointment, Client, Product, FinancialRecord, AppSettings, Service } from '../types';
 import {
   TrendingUp,
@@ -57,8 +57,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
 }) => {
   const now = new Date();
   const today = now.toISOString().split('T')[0];
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
 
   const getGreeting = () => {
     const hour = now.getHours();
@@ -67,12 +67,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
     return 'Boa noite';
   };
 
-  const currentMonthName = now.toLocaleDateString('pt-BR', { month: 'long' });
+  const selectedDate = new Date(selectedYear, selectedMonth, 1);
+  const currentMonthName = selectedDate.toLocaleDateString('pt-BR', { month: 'long' });
 
   const todayAppointments = appointments.filter(a => a.date === today);
   const monthAppointments = appointments.filter(a => {
     const d = new Date(a.date);
-    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
   });
 
   const completedMonthAppointments = monthAppointments.filter(a => a.status === 'Concluído');
@@ -81,14 +82,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const monthlyRevenue = financialRecords
     .filter(r => {
       const d = new Date(r.date);
-      return r.type === 'income' && d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+      return r.type === 'income' && d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
     })
     .reduce((acc, r) => acc + r.amount, 0);
 
   const monthlyExpenses = financialRecords
     .filter(r => {
       const d = new Date(r.date);
-      return r.type === 'expense' && d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+      return r.type === 'expense' && d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
     })
     .reduce((acc, r) => acc + r.amount, 0);
 
@@ -147,9 +148,38 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <h2 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight">
             {getGreeting()}, <span className="text-accent">{userName.split(' ')[0]}</span>! ✨
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mt-1">
-            Seu resumo de <span className="text-slate-800 dark:text-slate-200">{currentMonthName}</span>
-          </p>
+          <div className="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mt-2 flex items-center gap-2 flex-wrap">
+            Seu resumo de
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(Number(e.target.value))}
+              className="bg-transparent text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer hover:text-accent transition-colors underline decoration-dashed decoration-slate-300 dark:decoration-slate-600 underline-offset-4"
+              style={{ appearance: 'none', WebkitAppearance: 'none' }}
+              title="Escolher mês"
+            >
+              {Array.from({ length: 12 }, (_, i) => {
+                const date = new Date(selectedYear, i, 1);
+                return (
+                  <option key={i} value={i} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                    {date.toLocaleDateString('pt-BR', { month: 'long' })}
+                  </option>
+                );
+              })}
+            </select>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className="bg-transparent text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer hover:text-accent transition-colors underline decoration-dashed decoration-slate-300 dark:decoration-slate-600 underline-offset-4"
+              style={{ appearance: 'none', WebkitAppearance: 'none' }}
+              title="Escolher ano"
+            >
+              {[now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1].map(year => (
+                <option key={year} value={year} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div className="hidden sm:block text-right">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Data de Hoje</p>
