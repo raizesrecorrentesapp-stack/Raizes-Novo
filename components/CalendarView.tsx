@@ -14,8 +14,11 @@ import {
   CheckCircle2,
   XCircle,
   MoreVertical,
+  MoreVertical,
   Search,
-  AlertTriangle
+  AlertTriangle,
+  Trash2,
+  TrendingUp
 } from 'lucide-react';
 
 interface CalendarViewProps {
@@ -27,6 +30,7 @@ interface CalendarViewProps {
   onAddAppointment: (appointment: Appointment) => void;
   onUpdateAppointment: (appointment: Appointment) => void;
   onAddClient: (client: Client) => void;
+  onDeleteAppointment: (id: string) => void;
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
@@ -37,10 +41,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   products,
   onAddAppointment,
   onUpdateAppointment,
-  onAddClient
+  onAddClient,
+  onDeleteAppointment
 }) => {
   const [selectedDate, setSelectedDate] = useState(getLocalISODate());
   const [view, setView] = useState<'day' | 'month'>('day');
+  const [projectionMode, setProjectionMode] = useState<'day' | 'week' | 'month'>('day');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
@@ -402,8 +408,20 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                           </>
                         )}
                         <button
+                          onClick={() => {
+                            if(window.confirm('Tem certeza que deseja excluir esse agendamento?')) {
+                              onDeleteAppointment(app.id);
+                            }
+                          }}
+                          className="p-1.5 sm:p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 sm:w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => handleOpenModal(app)}
                           className="p-1.5 sm:p-2 bg-slate-50 text-slate-400 rounded-lg hover:bg-slate-100"
+                          title="Opções"
                         >
                           <MoreVertical className="w-3.5 h-3.5 sm:w-4 h-4" />
                         </button>
@@ -422,29 +440,66 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
           <div className="space-y-4 sm:space-y-6">
             <div className="bg-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-xl">
-              <h4 className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Resumo do Dia</h4>
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex justify-between items-end">
-                  <span className="text-[9px] sm:text-[10px] font-bold uppercase text-slate-400">Total Previsto</span>
-                  <span className="text-lg sm:text-xl font-black">{formatCurrency(appointmentsForDate.reduce((acc, a) => acc + a.totalValue, 0))}</span>
-                </div>
-                <div className="flex justify-between items-end">
-                  <span className="text-[9px] sm:text-[10px] font-bold uppercase text-slate-400">Total Recebido</span>
-                  <span className="text-lg sm:text-xl font-black text-emerald-400">
-                    {formatCurrency(appointmentsForDate.filter(a => a.status === 'Concluído').reduce((acc, a) => acc + a.totalValue, 0))}
-                  </span>
-                </div>
-                <div className="pt-4 border-t border-white/10 grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-[8px] sm:text-[9px] font-bold uppercase text-slate-500">Agendados</p>
-                    <p className="text-base sm:text-lg font-black">{appointmentsForDate.filter(a => a.status === 'Agendado').length}</p>
-                  </div>
-                  <div>
-                    <p className="text-[8px] sm:text-[9px] font-bold uppercase text-slate-500">Concluídos</p>
-                    <p className="text-base sm:text-lg font-black">{appointmentsForDate.filter(a => a.status === 'Concluído').length}</p>
-                  </div>
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Projeção</h4>
+                <div className="flex bg-slate-800 rounded-lg p-1">
+                  {(['day', 'week', 'month'] as const).map(m => (
+                    <button
+                      key={m}
+                      onClick={() => setProjectionMode(m)}
+                      className={`px-3 py-1.5 rounded text-[8px] sm:text-[9px] font-bold uppercase tracking-widest transition-colors ${
+                        projectionMode === m ? 'bg-accent text-white' : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      {m === 'day' ? 'Dia' : m === 'week' ? 'Sem' : 'Mês'}
+                    </button>
+                  ))}
                 </div>
               </div>
+
+              {(() => {
+                let projectedApps = appointmentsForDate;
+                if (projectionMode === 'week') {
+                  const curr = parseLocalDate(selectedDate);
+                  const start = new Date(curr);
+                  start.setDate(curr.getDate() - curr.getDay());
+                  const end = new Date(start);
+                  end.setDate(start.getDate() + 6);
+                  
+                  projectedApps = appointments.filter(a => {
+                    const d = parseLocalDate(a.date);
+                    return d >= start && d <= end;
+                  });
+                } else if (projectionMode === 'month') {
+                  const [y, m] = selectedDate.split('-');
+                  projectedApps = appointments.filter(a => a.date.startsWith(`${y}-${m}`));
+                }
+
+                return (
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="flex justify-between items-end">
+                      <span className="text-[9px] sm:text-[10px] font-bold uppercase text-slate-400">Total Previsto</span>
+                      <span className="text-lg sm:text-xl font-black">{formatCurrency(projectedApps.reduce((acc, a) => acc + a.totalValue, 0))}</span>
+                    </div>
+                    <div className="flex justify-between items-end">
+                      <span className="text-[9px] sm:text-[10px] font-bold uppercase text-slate-400">Total Recebido</span>
+                      <span className="text-lg sm:text-xl font-black text-emerald-400">
+                        {formatCurrency(projectedApps.filter(a => a.status === 'Concluído').reduce((acc, a) => acc + a.totalValue, 0))}
+                      </span>
+                    </div>
+                    <div className="pt-4 border-t border-white/10 grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-[8px] sm:text-[9px] font-bold uppercase text-slate-500">Agendados</p>
+                        <p className="text-base sm:text-lg font-black">{projectedApps.filter(a => a.status === 'Agendado' || a.status === 'Confirmado').length}</p>
+                      </div>
+                      <div>
+                        <p className="text-[8px] sm:text-[9px] font-bold uppercase text-slate-500">Concluídos</p>
+                        <p className="text-base sm:text-lg font-black">{projectedApps.filter(a => a.status === 'Concluído').length}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>

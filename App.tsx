@@ -306,6 +306,10 @@ const App: React.FC = () => {
                 products={products}
                 onAddAppointment={(a: Appointment) => setAppointments([...appointments, a])}
                 onAddClient={(c: Client) => setClients(prev => [...prev, c])}
+                onDeleteAppointment={(id: string) => {
+                  setAppointments(prev => prev.filter(a => a.id !== id));
+                  setFinancialRecords(prev => prev.filter(r => r.appointmentId !== id));
+                }}
                 onUpdateAppointment={(u: Appointment) => {
                   setAppointments(appointments.map(a => a.id === u.id ? u : a));
 
@@ -378,7 +382,13 @@ const App: React.FC = () => {
                 financialRecords={financialRecords}
                 onAdd={(r: FinancialRecord) => setFinancialRecords([...financialRecords, r])}
                 onUpdate={(u: FinancialRecord) => setFinancialRecords(financialRecords.map(r => r.id === u.id ? u : r))}
-                onDelete={(id: string) => setFinancialRecords(financialRecords.filter(r => r.id !== id))}
+                onDelete={(id: string) => {
+                  const record = financialRecords.find(r => r.id === id);
+                  if (record?.appointmentId) {
+                    setAppointments(prev => prev.filter(a => a.id !== record.appointmentId));
+                  }
+                  setFinancialRecords(financialRecords.filter(r => r.id !== id));
+                }}
                 appointments={appointments}
               />
             )}
