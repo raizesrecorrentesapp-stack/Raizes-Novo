@@ -38,3 +38,25 @@ export const formatDuration = (minutes: number) => {
   if (h > 0) return `${h}h`;
   return `${m} min`;
 };
+
+export const getReservedStock = (productId: string, appointments: any[]): number => {
+  // Only consider active appointments (Agendado, Confirmado) 
+  // Concluded appointments already deducted the physical stock, and canceled/missed do not use stock
+  const activeAppointments = appointments.filter(a => a.status === 'Agendado' || a.status === 'Confirmado');
+  
+  let reservedQty = 0;
+  activeAppointments.forEach(app => {
+    if (app.usedProducts) {
+      const usage = app.usedProducts.find(up => up.productId === productId);
+      if (usage) {
+        reservedQty += usage.quantity;
+      }
+    }
+  });
+  return reservedQty;
+};
+
+export const getAvailableStock = (product: any, appointments: any[]): number => {
+  const reserved = getReservedStock(product.id, appointments);
+  return product.quantity - reserved;
+};

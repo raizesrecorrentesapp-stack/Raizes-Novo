@@ -367,6 +367,7 @@ const App: React.FC = () => {
             {activeTab === ViewState.INVENTORY && (
               <InventoryManager
                 products={products}
+                appointments={appointments}
                 onAddProduct={p => setProducts([...products, p])}
                 onUpdateProduct={u => setProducts(products.map(p => p.id === u.id ? u : p))}
                 onDeleteProduct={id => setProducts(products.filter(p => p.id !== id))}

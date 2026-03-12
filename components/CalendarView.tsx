@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Appointment, Client, Service, Professional, Product } from '../types';
-import { formatCurrency, formatDate, getStatusColor, formatDuration, getLocalISODate, parseLocalDate } from '../utils/calculations';
+import { formatCurrency, formatDate, getStatusColor, formatDuration, getLocalISODate, parseLocalDate, getAvailableStock } from '../utils/calculations';
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -554,22 +554,24 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       const newAlerts: string[] = [];
 
                       if (!editingAppointment && service && service.materials) {
+                        // Consider appointments inside this scope to get available stock
+                        // Since we just import it, we pass products and `appointments` state 
                         service.materials.forEach(mat => {
                           const validOptions = mat.options
                             .map(optId => products.find(p => p.id === optId))
                             .filter(p => p !== undefined) as Product[];
 
                           const optionWithEnoughStock = validOptions
-                            .filter(p => p.quantity >= mat.quantity)
-                            .sort((a, b) => b.quantity - a.quantity)[0];
+                            .filter(p => getAvailableStock(p, appointments) >= mat.quantity)
+                            .sort((a, b) => getAvailableStock(b, appointments) - getAvailableStock(a, appointments))[0];
 
                           if (optionWithEnoughStock) {
                             newUsedProducts.push({ productId: optionWithEnoughStock.id, quantity: mat.quantity });
                           } else {
-                            const bestOption = validOptions.sort((a, b) => b.quantity - a.quantity)[0];
+                            const bestOption = validOptions.sort((a, b) => getAvailableStock(b, appointments) - getAvailableStock(a, appointments))[0];
                             if (bestOption) {
                               newUsedProducts.push({ productId: bestOption.id, quantity: mat.quantity });
-                              newAlerts.push(`Estoque insuficiente de ${mat.name}. Sugerido ${bestOption.name} (tem ${bestOption.quantity}, precisa de ${mat.quantity}). Reabasteça!`);
+                              newAlerts.push(`Estoque insuficiente de ${mat.name}. Sugerido ${bestOption.name} (tem ${getAvailableStock(bestOption, appointments)} disp, precisa de ${mat.quantity}). Reabasteça!`);
                             } else {
                               newAlerts.push(`Nenhum produto em estoque associado ao material: ${mat.name}.`);
                             }
@@ -632,7 +634,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                         >
                           <option value="">Produto...</option>
                           {products.map(p => (
-                            <option key={p.id} value={p.id}>{p.name} (Disp: {p.quantity})</option>
+                            <option key={p.id} value={p.id}>{p.name} (Disp: {getAvailableStock(p, appointments)})</option>
                           ))}
                         </select>
                         <input

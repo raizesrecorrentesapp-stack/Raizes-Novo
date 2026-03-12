@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Product } from '../types';
-import { formatCurrency } from '../utils/calculations';
+import { Product, Appointment } from '../types';
+import { formatCurrency, getReservedStock, getAvailableStock } from '../utils/calculations';
 import { 
   Plus, 
   Search, 
@@ -18,6 +18,7 @@ import {
 
 interface InventoryManagerProps {
   products: Product[];
+  appointments: Appointment[];
   onAddProduct: (product: Product) => void;
   onUpdateProduct: (product: Product) => void;
   onDeleteProduct: (productId: string) => void;
@@ -25,6 +26,7 @@ interface InventoryManagerProps {
 
 export const InventoryManager: React.FC<InventoryManagerProps> = ({ 
   products, 
+  appointments,
   onAddProduct, 
   onUpdateProduct, 
   onDeleteProduct 
@@ -92,7 +94,7 @@ export const InventoryManager: React.FC<InventoryManagerProps> = ({
             <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Itens em Alerta</p>
-                <p className="text-2xl font-black text-red-500">{products.filter(p => p.quantity <= p.minQuantity).length}</p>
+                <p className="text-2xl font-black text-red-500">{products.filter(p => getAvailableStock(p, appointments) <= p.minQuantity).length}</p>
               </div>
               <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-xl">
                 <AlertTriangle className="w-6 h-6 text-red-500" />
@@ -130,7 +132,10 @@ export const InventoryManager: React.FC<InventoryManagerProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {filteredProducts.map(product => {
-              const isLowStock = product.quantity <= product.minQuantity;
+              const availableQty = getAvailableStock(product, appointments);
+              const reservedQty = getReservedStock(product.id, appointments);
+              const isLowStock = availableQty <= product.minQuantity;
+              
               return (
                 <div 
                   key={product.id}
@@ -151,17 +156,29 @@ export const InventoryManager: React.FC<InventoryManagerProps> = ({
                   
                   <div className="space-y-3 pt-4 border-t border-slate-50 dark:border-slate-800">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estoque</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest" title="Estoque Físico Total">Físico</span>
+                      <span className="text-sm font-bold text-slate-600 dark:text-slate-300">
+                        {product.quantity}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest" title="Preso em Agendamentos Futuros">Reservado</span>
+                      <span className="text-sm font-bold text-amber-500">
+                        {reservedQty > 0 ? `-${reservedQty}` : '0'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-800/50">
+                      <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">Disponível</span>
                       <div className="flex items-center gap-2">
-                        <span className={`text-sm font-black ${isLowStock ? 'text-red-500' : 'text-slate-800 dark:text-slate-100'}`}>
-                          {product.quantity}
+                        <span className={`text-sm font-black ${isLowStock ? 'text-red-500' : 'text-emerald-600'}`}>
+                          {availableQty}
                         </span>
                         {isLowStock && <AlertTriangle className="w-3.5 h-3.5 text-red-500" />}
                       </div>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center pt-2">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Preço</span>
-                      <span className="text-sm font-black text-slate-800 dark:text-slate-100">{formatCurrency(product.price)}</span>
+                      <span className="text-xs font-black text-slate-800 dark:text-slate-100">{formatCurrency(product.price)}</span>
                     </div>
                   </div>
                 </div>
