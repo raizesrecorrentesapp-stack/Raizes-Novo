@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Client, Appointment, Service } from '../types';
-import { formatCurrency, formatDate } from '../utils/calculations';
+import { formatCurrency, formatDate, parseLocalDate } from '../utils/calculations';
 import { 
   UserPlus, 
   Search, 
@@ -136,7 +136,7 @@ export const ClientManager: React.FC<ClientManagerProps> = ({
     let maintenanceStatus: 'active' | 'maintenance' | 'inactive' = 'inactive';
     
     if (lastAppt) {
-      const lastDate = new Date(lastAppt.date);
+      const lastDate = parseLocalDate(lastAppt.date);
       const today = new Date();
       const diffTime = Math.abs(today.getTime() - lastDate.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));

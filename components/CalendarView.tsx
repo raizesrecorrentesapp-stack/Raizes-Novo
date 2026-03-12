@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Appointment, Client, Service, Professional, Product } from '../types';
-import { formatCurrency, formatDate, getStatusColor, formatDuration } from '../utils/calculations';
+import { formatCurrency, formatDate, getStatusColor, formatDuration, getLocalISODate, parseLocalDate } from '../utils/calculations';
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -39,7 +39,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   onUpdateAppointment,
   onAddClient
 }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(getLocalISODate());
   const [view, setView] = useState<'day' | 'month'>('day');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,15 +59,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
   const handlePrevDay = () => {
-    const d = new Date(selectedDate);
+    const d = parseLocalDate(selectedDate);
     d.setDate(d.getDate() - 1);
-    setSelectedDate(d.toISOString().split('T')[0]);
+    setSelectedDate(getLocalISODate(d));
   };
 
   const handleNextDay = () => {
-    const d = new Date(selectedDate);
+    const d = parseLocalDate(selectedDate);
     d.setDate(d.getDate() + 1);
-    setSelectedDate(d.toISOString().split('T')[0]);
+    setSelectedDate(getLocalISODate(d));
   };
 
   const handleOpenModal = (app?: Appointment) => {
@@ -151,7 +151,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const getDayStatus = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = getLocalISODate(date);
     const dayApps = appointments.filter(a => a.date === dateStr);
 
     if (dayApps.length === 0) return 'free';
@@ -212,14 +212,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               <div className="px-1 sm:px-4 flex items-center gap-2 min-w-[100px] sm:min-w-[180px] justify-center">
                 <AnimatePresence mode="wait">
                   <motion.span
-                    key={view === 'day' ? selectedDate : currentMonth.toISOString()}
+                    key={view === 'day' ? selectedDate : getLocalISODate(currentMonth)}
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
                     className="text-[9px] sm:text-xs font-black uppercase tracking-tight text-slate-800 dark:text-slate-100 whitespace-nowrap"
                   >
                     {view === 'day'
-                      ? new Date(selectedDate).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' })
+                      ? parseLocalDate(selectedDate).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' })
                       : currentMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
                     }
                   </motion.span>
@@ -269,15 +269,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               if (!date) return <div key={`empty-${idx}`} className="bg-white dark:bg-slate-900 p-1 sm:p-4 min-h-[50px] sm:min-h-[120px]" />;
 
               const status = getDayStatus(date);
-              const isSelected = date.toISOString().split('T')[0] === selectedDate;
-              const isToday = date.toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
-              const dayApps = appointments.filter(a => a.date === date.toISOString().split('T')[0]);
+              const dateStr = getLocalISODate(date);
+              const isSelected = dateStr === selectedDate;
+              const isToday = dateStr === getLocalISODate();
+              const dayApps = appointments.filter(a => a.date === dateStr);
 
               return (
                 <div
-                  key={date.toISOString()}
+                  key={dateStr}
                   onClick={() => {
-                    setSelectedDate(date.toISOString().split('T')[0]);
+                    setSelectedDate(dateStr);
                     setView('day');
                   }}
                   className={`

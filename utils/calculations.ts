@@ -4,7 +4,20 @@ export const formatCurrency = (val: number) => {
 };
 
 export const formatDate = (dateStr: string) => {
+  if (!dateStr) return '';
   return dateStr.split('-').reverse().join('/');
+};
+
+// Returns YYYY-MM-DD based on local timezone, avoiding UTC shifts
+export const getLocalISODate = (date: Date = new Date()) => {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
+
+export const parseLocalDate = (dateStr: string) => {
+  if (!dateStr) return new Date();
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d); // midnight in local time
 };
 
 export const getStatusColor = (status: string) => {

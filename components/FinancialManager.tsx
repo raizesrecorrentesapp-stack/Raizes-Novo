@@ -17,7 +17,7 @@ import {
   ArrowDownCircle,
   ChevronDown
 } from 'lucide-react';
-import { formatCurrency, formatDate } from '../utils/calculations';
+import { formatCurrency, formatDate, getLocalISODate } from '../utils/calculations';
 
 interface FinancialManagerProps {
   financialRecords: FinancialRecord[];
@@ -37,15 +37,15 @@ export const FinancialManager: React.FC<FinancialManagerProps> = ({
   const [view, setView] = useState<'list' | 'form'>('list');
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState({
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-    end: new Date().toISOString().split('T')[0]
+    start: getLocalISODate(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
+    end: getLocalISODate()
   });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
   const [isRegisterMenuOpen, setIsRegisterMenuOpen] = useState(false);
   
   const [formData, setFormData] = useState<FinancialRecord>({
     id: '',
-    date: new Date().toISOString().split('T')[0],
+    date: getLocalISODate(),
     amount: 0,
     category: 'Outros',
     description: '',
@@ -91,7 +91,7 @@ export const FinancialManager: React.FC<FinancialManagerProps> = ({
       setEditingRecord(null);
       setFormData({
         id: crypto.randomUUID(),
-        date: new Date().toISOString().split('T')[0],
+        date: getLocalISODate(),
         amount: 0,
         category: type === 'income' ? 'Venda' : 'Outros',
         description: '',

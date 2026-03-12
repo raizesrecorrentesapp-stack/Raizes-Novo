@@ -16,7 +16,7 @@ import {
   XCircle
 } from 'lucide-react';
 import { OnboardingWidget } from './OnboardingWidget';
-import { formatCurrency, formatDuration } from '../utils/calculations';
+import { formatCurrency, formatDuration, getLocalISODate, parseLocalDate } from '../utils/calculations';
 import {
   BarChart,
   Bar,
@@ -56,7 +56,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onNavigate
 }) => {
   const now = new Date();
-  const today = now.toISOString().split('T')[0];
+  const today = getLocalISODate(now);
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
 
@@ -72,7 +72,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const todayAppointments = appointments.filter(a => a.date === today);
   const monthAppointments = appointments.filter(a => {
-    const d = new Date(a.date);
+    const d = parseLocalDate(a.date);
     return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
   });
 
@@ -81,14 +81,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const monthlyRevenue = financialRecords
     .filter(r => {
-      const d = new Date(r.date);
+      const d = parseLocalDate(r.date);
       return r.type === 'income' && d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
     })
     .reduce((acc, r) => acc + r.amount, 0);
 
   const monthlyExpenses = financialRecords
     .filter(r => {
-      const d = new Date(r.date);
+      const d = parseLocalDate(r.date);
       return r.type === 'expense' && d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
     })
     .reduce((acc, r) => acc + r.amount, 0);
@@ -105,7 +105,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     const lastAppt = clientAppts[0];
     if (!lastAppt) return false;
 
-    const lastDate = new Date(lastAppt.date);
+    const lastDate = parseLocalDate(lastAppt.date);
     const today = new Date();
     const diffTime = Math.abs(today.getTime() - lastDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -124,7 +124,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const appointmentsByDay = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().split('T')[0];
+    const dateStr = getLocalISODate(d);
     const count = appointments.filter(a => a.date === dateStr).length;
     return { day: d.toLocaleDateString('pt-BR', { weekday: 'short' }), count };
   }).reverse();
