@@ -358,6 +358,7 @@ const App: React.FC = () => {
             {activeTab === ViewState.SERVICES && (
               <ServiceManager
                 services={services}
+                products={products}
                 onAddService={s => setServices([...services, s])}
                 onUpdateService={u => setServices(services.map(s => s.id === u.id ? u : s))}
                 onDeleteService={id => setServices(services.filter(s => s.id !== id))}

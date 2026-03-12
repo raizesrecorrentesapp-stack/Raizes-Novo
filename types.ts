@@ -12,12 +12,20 @@ export interface Client {
   status: 'active' | 'inactive';
 }
 
+export interface ServiceMaterial {
+  id: string; // Identificador único da dependência
+  name: string; // Nome lógico (ex: "Trança")
+  options: string[]; // Lista de IDs de Produtos do estoque que servem para este material
+  quantity: number; // Quantidade necessária do produto
+}
+
 export interface Service {
   id: string;
   name: string;
   duration: number; // em minutos
   price: number;
   category?: string;
+  materials?: ServiceMaterial[];
 }
 
 export interface Professional {
