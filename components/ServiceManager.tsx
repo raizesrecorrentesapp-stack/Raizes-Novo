@@ -123,8 +123,10 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Preço</span>
-                    <span className="text-sm font-black text-slate-800 dark:text-slate-100">{formatCurrency(service.price)}</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Referência</span>
+                    <span className="text-sm font-black text-slate-800 dark:text-slate-100">
+                      {service.price != null && service.price > 0 ? formatCurrency(service.price) : <span className="text-slate-400 font-medium text-xs italic">Livre</span>}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -173,13 +175,14 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Preço Sugerido</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Preço Sugerido <span className="text-slate-400 font-medium">(opcional)</span></label>
                   <input
-                    required
                     type="number"
                     step="0.01"
-                    value={formData.price}
-                    onChange={e => setFormData({ ...formData, price: Number(e.target.value) })}
+                    min="0"
+                    placeholder="0,00 — Deixe vazio para preço livre"
+                    value={formData.price ?? ''}
+                    onChange={e => setFormData({ ...formData, price: e.target.value === '' ? undefined : Number(e.target.value) })}
                     className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold text-sm text-slate-900 dark:text-slate-100"
                   />
                 </div>

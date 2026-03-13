@@ -10,6 +10,7 @@ import { ProfileView } from './components/ProfileView';
 import { SettingsView } from './components/SettingsView';
 import { CalendarView } from './components/CalendarView';
 import { InventoryManager } from './components/InventoryManager';
+import { ServiceAnalytics } from './components/ServiceAnalytics';
 import { ServiceManager } from './components/ServiceManager';
 import { LogoText } from './components/Logo';
 import { ProfileWidget } from './components/ProfileWidget';
@@ -22,6 +23,7 @@ import {
   Package,
   DollarSign,
   Bot,
+  BarChart2,
   Sun,
   Moon,
   Menu,
@@ -212,6 +214,7 @@ const App: React.FC = () => {
       case ViewState.INVENTORY: return 'Estoque';
       case ViewState.FINANCE: return 'Financeiro';
       case ViewState.AI_ANALYST: return 'Analista IA';
+      case ViewState.ANALYTICS: return 'Análise de Serviços';
       case ViewState.PROFILE: return 'Perfil';
       case ViewState.SETTINGS: return 'Configurações';
       default: return tab;
@@ -263,6 +266,7 @@ const App: React.FC = () => {
           <NavItem icon={Package} label="Estoque" active={activeTab === ViewState.INVENTORY} onClick={() => handleNavClick(ViewState.INVENTORY)} />
           <NavItem icon={DollarSign} label="Financeiro" active={activeTab === ViewState.FINANCE} onClick={() => handleNavClick(ViewState.FINANCE)} />
           <div className="pt-8 pb-2 px-4 opacity-30 text-[10px] font-bold uppercase tracking-[0.2em]">Inteligência</div>
+          <NavItem icon={BarChart2} label="Análise BCG" active={activeTab === ViewState.ANALYTICS} onClick={() => handleNavClick(ViewState.ANALYTICS)} />
           <NavItem icon={Bot} label="Analista IA" active={activeTab === ViewState.AI_ANALYST} onClick={() => handleNavClick(ViewState.AI_ANALYST)} isSpecial={true} />
         </nav>
       </aside>
@@ -391,6 +395,12 @@ const App: React.FC = () => {
                   setFinancialRecords(financialRecords.filter(r => r.id !== id));
                 }}
                 appointments={appointments}
+              />
+            )}
+            {activeTab === ViewState.ANALYTICS && (
+              <ServiceAnalytics
+                appointments={appointments}
+                services={services}
               />
             )}
             {activeTab === ViewState.AI_ANALYST && (

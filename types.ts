@@ -23,7 +23,7 @@ export interface Service {
   id: string;
   name: string;
   duration: number; // em minutos
-  price: number;
+  price?: number; // Valor de referência/sugestão (não obrigatório)
   category?: string;
   materials?: ServiceMaterial[];
 }
@@ -44,6 +44,8 @@ export interface UsedProduct {
   quantity: number;
 }
 
+export type PaymentStatus = 'paid' | 'partial' | 'pending';
+
 export interface Appointment {
   id: string;
   clientId: string;
@@ -55,6 +57,8 @@ export interface Appointment {
   status: AppointmentStatus;
   notes?: string;
   totalValue: number;
+  paymentStatus?: PaymentStatus; // 'paid' | 'partial' | 'pending'
+  depositAmount?: number; // valor do sinal (se paymentStatus === 'partial')
   usedProducts?: UsedProduct[];
 }
 
@@ -114,6 +118,7 @@ export enum ViewState {
   INVENTORY = 'INVENTORY',
   FINANCE = 'FINANCE',
   AI_ANALYST = 'AI_ANALYST',
+  ANALYTICS = 'ANALYTICS',
   PROFILE = 'PROFILE',
   SETTINGS = 'SETTINGS'
 }

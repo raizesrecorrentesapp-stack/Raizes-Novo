@@ -643,7 +643,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold text-sm text-slate-900 dark:text-slate-100"
                   >
                     <option value="">Selecione o serviço...</option>
-                    {services.map(s => <option key={s.id} value={s.id}>{s.name} ({formatDuration(s.duration)} • {formatCurrency(s.price)})</option>)}
+                    {services.map(s => <option key={s.id} value={s.id}>{s.name} ({formatDuration(s.duration)}{s.price ? ` • Ref: ${formatCurrency(s.price)}` : ''})</option>)}
                   </select>
                 </div>
 
@@ -655,6 +655,57 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     <ul className="list-disc pl-5 text-xs text-red-600 dark:text-red-400 font-medium space-y-1">
                       {stockAlerts.map((alert, i) => <li key={i}>{alert}</li>)}
                     </ul>
+                  </div>
+                )}
+
+                {/* Valor e Pagamento */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Valor Total</label>
+                    <input
+                      required
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="0,00"
+                      value={formData.totalValue ?? ''}
+                      onChange={e => setFormData({ ...formData, totalValue: Number(e.target.value) })}
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold text-sm text-slate-900 dark:text-slate-100"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Pagamento</label>
+                    <select
+                      value={formData.paymentStatus ?? 'pending'}
+                      onChange={e => setFormData({ ...formData, paymentStatus: e.target.value as any, depositAmount: e.target.value !== 'partial' ? undefined : formData.depositAmount })}
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold text-sm text-slate-900 dark:text-slate-100"
+                    >
+                      <option value="pending">⏳ A Pagar na Hora</option>
+                      <option value="partial">💰 Sinal Enviado</option>
+                      <option value="paid">✅ Já Pago</option>
+                    </select>
+                  </div>
+                </div>
+
+                {formData.paymentStatus === 'partial' && (
+                  <div className="space-y-1.5 animate-slide-up">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Valor do Sinal Recebido</label>
+                    <input
+                      required
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max={formData.totalValue}
+                      placeholder="0,00"
+                      value={formData.depositAmount ?? ''}
+                      onChange={e => setFormData({ ...formData, depositAmount: Number(e.target.value) })}
+                      className="w-full px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl outline-none font-bold text-sm text-slate-900 dark:text-slate-100"
+                    />
+                    {formData.depositAmount != null && formData.totalValue != null && formData.depositAmount > 0 && (
+                      <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400 ml-1">
+                        Restante a receber: {formatCurrency(formData.totalValue - formData.depositAmount)}
+                      </p>
+                    )}
                   </div>
                 )}
 
