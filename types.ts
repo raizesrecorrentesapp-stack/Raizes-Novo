@@ -12,6 +12,23 @@ export interface Client {
   status: 'active' | 'inactive';
 }
 
+export type LeadStatus = 'novo' | 'em_contato' | 'negociando' | 'confirmado' | 'perdido';
+export type LeadSource = 'Instagram' | 'Indicação' | 'WhatsApp' | 'Google' | 'TikTok' | 'Presencial' | 'Outro';
+
+export interface Lead {
+  id: string;
+  name: string;
+  phone?: string;
+  source: LeadSource;
+  status: LeadStatus;
+  serviceInterest?: string;
+  notes?: string;
+  createdAt: string;
+  lastContactAt?: string;
+  convertedToAppointmentId?: string;
+  convertedToClientId?: string;
+}
+
 export interface ServiceMaterial {
   id: string; // Identificador único da dependência
   name: string; // Nome lógico (ex: "Trança")
@@ -119,6 +136,7 @@ export enum ViewState {
   FINANCE = 'FINANCE',
   AI_ANALYST = 'AI_ANALYST',
   ANALYTICS = 'ANALYTICS',
+  LEADS = 'LEADS',
   PROFILE = 'PROFILE',
   SETTINGS = 'SETTINGS'
 }
