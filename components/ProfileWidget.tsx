@@ -9,7 +9,9 @@ import {
   Target,
   Settings,
   UserCircle,
-  Briefcase
+  Briefcase,
+  MessageSquare,
+  BarChart2
 } from 'lucide-react';
 import { ViewState } from '../types';
 import { supabase } from '../services/supabase';
@@ -92,6 +94,18 @@ export const ProfileWidget: React.FC<ProfileWidgetProps> = ({ activeTab, onNavig
                   label="Financeiro"
                   active={activeTab === ViewState.FINANCE}
                   onClick={() => handleNav(ViewState.FINANCE)}
+                />
+                <SubMenuItem
+                  icon={MessageSquare}
+                  label="Leads"
+                  active={activeTab === ViewState.LEADS}
+                  onClick={() => handleNav(ViewState.LEADS)}
+                />
+                <SubMenuItem
+                  icon={BarChart2}
+                  label="Análise BCG"
+                  active={activeTab === ViewState.ANALYTICS}
+                  onClick={() => handleNav(ViewState.ANALYTICS)}
                 />
               </div>
             )}
