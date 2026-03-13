@@ -14,7 +14,6 @@ import {
   CheckCircle2,
   XCircle,
   MoreVertical,
-  MoreVertical,
   Search,
   AlertTriangle,
   Trash2,
@@ -47,7 +46,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const [selectedDate, setSelectedDate] = useState(getLocalISODate());
   const [view, setView] = useState<'day' | 'month'>('day');
   const [projectionMode, setProjectionMode] = useState<'day' | 'week' | 'month'>('day');
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(() => parseLocalDate(getLocalISODate()));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
   const [clientType, setClientType] = useState<'existing' | 'new'>('existing');

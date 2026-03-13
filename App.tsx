@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ViewState, Appointment, Client, Professional, Service, Product, FinancialRecord, UserProfile, AppSettings } from './types';
+import { getLocalISODate } from './utils/calculations';
 import { Dashboard } from './components/Dashboard';
 import { ClientManager } from './components/ClientManager';
 import { FinancialManager } from './components/FinancialManager';
@@ -55,7 +56,7 @@ const App: React.FC = () => {
     businessName: 'Agenda Simples',
     currency: 'BRL',
     timezone: 'GMT-3 (Brasília)',
-    startDate: new Date().toISOString().split('T')[0],
+    startDate: getLocalISODate(),
     notes: ''
   });
 
@@ -145,7 +146,7 @@ const App: React.FC = () => {
             businessName: 'Meu Negócio',
             currency: 'BRL',
             timezone: 'America/Sao_Paulo',
-            startDate: new Date().toISOString().split('T')[0],
+            startDate: getLocalISODate(),
             notes: ''
           });
         }
