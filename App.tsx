@@ -271,9 +271,7 @@ const App: React.FC = () => {
           <NavItem icon={Scissors} label="Serviços" active={activeTab === ViewState.SERVICES} onClick={() => handleNavClick(ViewState.SERVICES)} />
           <NavItem icon={Package} label="Estoque" active={activeTab === ViewState.INVENTORY} onClick={() => handleNavClick(ViewState.INVENTORY)} />
           <NavItem icon={DollarSign} label="Financeiro" active={activeTab === ViewState.FINANCE} onClick={() => handleNavClick(ViewState.FINANCE)} />
-          <NavItem icon={MessageSquare} label="Leads" active={activeTab === ViewState.LEADS} onClick={() => handleNavClick(ViewState.LEADS)} />
           <div className="pt-8 pb-2 px-4 opacity-30 text-[10px] font-bold uppercase tracking-[0.2em]">Inteligência</div>
-          <NavItem icon={BarChart2} label="Análise BCG" active={activeTab === ViewState.ANALYTICS} onClick={() => handleNavClick(ViewState.ANALYTICS)} />
           <NavItem icon={Bot} label="Analista IA" active={activeTab === ViewState.AI_ANALYST} onClick={() => handleNavClick(ViewState.AI_ANALYST)} isSpecial={true} />
         </nav>
       </aside>
@@ -306,7 +304,31 @@ const App: React.FC = () => {
                 professionals={professionals}
                 settings={appSettings}
                 userName={userProfile.name}
-                onNavigate={handleNavClick}
+                onNavigate={setActiveTab}
+                leads={leads}
+                onAddLead={l => setLeads([...leads, l])}
+                onUpdateLead={u => setLeads(leads.map(l => l.id === u.id ? u : l))}
+                onDeleteLead={id => setLeads(leads.filter(l => l.id !== id))}
+                onConvertToAppointment={(lead) => {
+                  const clientExists = clients.find(c => c.phone === lead.phone || c.name === lead.name);
+                  let clientId = clientExists?.id;
+
+                  if (!clientExists) {
+                    const newClientId = window.crypto.randomUUID();
+                    const newClient: Client = {
+                      id: newClientId,
+                      name: lead.name,
+                      phone: lead.phone,
+                      status: 'active',
+                      notes: `Lead de ${lead.source}. Interesses: ${lead.serviceInterest}. Notas do lead: ${lead.notes}`
+                    };
+                    setClients([...clients, newClient]);
+                    clientId = newClientId;
+                  }
+
+                  setLeads(leads.map(l => l.id === lead.id ? { ...l, status: 'confirmado', convertedToClientId: clientId } : l));
+                  setActiveTab(ViewState.CALENDAR);
+                }}
               />
             )}
             {activeTab === ViewState.CALENDAR && (
@@ -402,48 +424,6 @@ const App: React.FC = () => {
                   setFinancialRecords(financialRecords.filter(r => r.id !== id));
                 }}
                 appointments={appointments}
-              />
-            )}
-            {activeTab === ViewState.ANALYTICS && (
-              <ServiceAnalytics
-                appointments={appointments}
-                services={services}
-              />
-            )}
-            {activeTab === ViewState.LEADS && (
-              <LeadsManager
-                leads={leads}
-                services={services}
-                onAddLead={l => setLeads([...leads, l])}
-                onUpdateLead={u => setLeads(leads.map(l => l.id === u.id ? u : l))}
-                onDeleteLead={id => setLeads(leads.filter(l => l.id !== id))}
-                onConvertToAppointment={(lead) => {
-                  // Create client if not exists
-                  const clientExists = clients.find(c => c.phone === lead.phone || c.name === lead.name);
-                  let clientId = clientExists?.id;
-                  
-                  if (!clientExists) {
-                    const newClientId = window.crypto.randomUUID();
-                    const newClient: Client = {
-                      id: newClientId,
-                      name: lead.name,
-                      phone: lead.phone,
-                      status: 'active',
-                      notes: `Lead de ${lead.source}. Interesses: ${lead.serviceInterest}. Notas do lead: ${lead.notes}`
-                    };
-                    setClients([...clients, newClient]);
-                    clientId = newClientId;
-                  }
-
-                  // Mark lead as confirmed
-                  setLeads(leads.map(l => l.id === lead.id ? { ...l, status: 'confirmado', convertedToClientId: clientId } : l));
-
-                  // Switch to Calendar
-                  setActiveTab(ViewState.CALENDAR);
-                  
-                  // In a real app we'd pass prefill data to CalendarView
-                  // For now, it switches and the user creates the appointment
-                }}
               />
             )}
             {activeTab === ViewState.AI_ANALYST && (
