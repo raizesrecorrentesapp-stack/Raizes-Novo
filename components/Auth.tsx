@@ -197,10 +197,16 @@ export const Auth: React.FC = () => {
                 {/* Logo */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '56px', animation: 'authFadeUp 0.6s ease-out both' }}>
                     <div style={{
-                        width: '44px', height: '44px',
+                        width: '48px', height: '48px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '14px',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                        padding: '8px',
+                        backdropFilter: 'blur(8px)',
                     }}>
-                        <img src="/logo.png" alt="AgendaSimples Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        <img src="/logo.png" alt="AgendaSimples Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '4px' }} />
                     </div>
                     <span style={{ color: 'white', fontSize: '20px', fontWeight: 700, letterSpacing: '-0.5px' }}>
                         Agenda<span style={{ color: '#db2777' }}>Simples</span>
@@ -279,10 +285,16 @@ export const Auth: React.FC = () => {
                     {/* Mobile logo */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '40px' }} className="auth-logo-mobile">
                         <div style={{
-                            width: '46px', height: '46px',
+                            width: '48px', height: '48px',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '14px',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                            padding: '8px',
+                            backdropFilter: 'blur(8px)',
                         }}>
-                            <img src="/logo.png" alt="AgendaSimples Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                            <img src="/logo.png" alt="AgendaSimples Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '4px' }} />
                         </div>
                         <div>
                             <div style={{ color: 'white', fontSize: '22px', fontWeight: 800, letterSpacing: '-0.5px', lineHeight: 1 }}>
