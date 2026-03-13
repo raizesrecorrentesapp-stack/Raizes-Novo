@@ -198,11 +198,9 @@ export const Auth: React.FC = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '56px', animation: 'authFadeUp 0.6s ease-out both' }}>
                     <div style={{
                         width: '44px', height: '44px',
-                        background: 'linear-gradient(135deg, #db2777, #9333ea)',
-                        borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 8px 32px rgba(219,39,119,0.35)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                        <span style={{ color: 'white', fontWeight: 900, fontSize: '18px' }}>A</span>
+                        <img src="/logo.png" alt="AgendaSimples Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     </div>
                     <span style={{ color: 'white', fontSize: '20px', fontWeight: 700, letterSpacing: '-0.5px' }}>
                         Agenda<span style={{ color: '#db2777' }}>Simples</span>
@@ -282,11 +280,9 @@ export const Auth: React.FC = () => {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '40px' }} className="auth-logo-mobile">
                         <div style={{
                             width: '46px', height: '46px',
-                            background: 'linear-gradient(135deg, #db2777, #9333ea)',
-                            borderRadius: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            boxShadow: '0 8px 32px rgba(219,39,119,0.4)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
                         }}>
-                            <span style={{ color: 'white', fontWeight: 900, fontSize: '20px' }}>A</span>
+                            <img src="/logo.png" alt="AgendaSimples Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                         </div>
                         <div>
                             <div style={{ color: 'white', fontSize: '22px', fontWeight: 800, letterSpacing: '-0.5px', lineHeight: 1 }}>
