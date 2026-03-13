@@ -88,7 +88,7 @@ export const ProfessionalManager: React.FC<ProfessionalManagerProps> = ({
             </div>
             <button 
               onClick={() => handleOpenForm()}
-              className="w-full sm:w-auto px-6 py-3 bg-slate-900 text-white rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 shadow-sm hover:brightness-110 transition"
+              className="w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 shadow-sm hover:brightness-110 transition"
             >
               <Plus className="w-4 h-4" /> Novo Profissional
             </button>
@@ -101,11 +101,11 @@ export const ProfessionalManager: React.FC<ProfessionalManagerProps> = ({
                 className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 transition-all group shadow-sm"
               >
                 <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 font-black text-lg flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
+                  <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 font-black text-lg flex items-center justify-center group-hover:bg-accent group-hover:text-white transition-all">
                     {professional.name.charAt(0)}
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => handleOpenForm(professional)} className="p-2 text-slate-400 hover:text-blue-500"><Edit className="w-4 h-4" /></button>
+                  <div className="flex gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => handleOpenForm(professional)} className="p-2 text-slate-400 hover:text-accent"><Edit className="w-4 h-4" /></button>
                     <button onClick={() => { if(window.confirm('Excluir profissional?')) onDeleteProfessional(professional.id) }} className="p-2 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 </div>
@@ -210,7 +210,7 @@ export const ProfessionalManager: React.FC<ProfessionalManagerProps> = ({
             </div>
 
             <div className="flex gap-4 mt-10">
-              <button type="submit" className="flex-1 py-4 bg-slate-900 text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl hover:brightness-110 transition-all">
+              <button type="submit" className="flex-1 py-4 bg-accent text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl hover:brightness-110 transition-all">
                 {editingProfessional ? 'Salvar Alterações' : 'Cadastrar Profissional'}
               </button>
               <button type="button" onClick={() => setView('list')} className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-200 transition-colors">

@@ -255,12 +255,23 @@ const App: React.FC = () => {
         `}
       </style>
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-40 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        </AnimatePresence>
       )}
 
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform duration-200 lg:relative lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 text-white flex flex-col transition-transform duration-300 ease-out lg:relative lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-20 flex items-center px-6 border-b border-white/5">
           <LogoText />
+          <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden ml-auto p-2 text-white/50 hover:text-white transition-colors">
+            <X className="w-5 h-5" />
+          </button>
         </div>
         <nav className="flex-1 py-6 space-y-1 px-4 overflow-y-auto">
           <NavItem icon={LayoutDashboard} label="Dashboard" active={activeTab === ViewState.DASHBOARD} onClick={() => handleNavClick(ViewState.DASHBOARD)} />
@@ -275,9 +286,9 @@ const App: React.FC = () => {
       </aside>
 
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 h-16 lg:h-20 flex items-center justify-between px-4 lg:px-8 shrink-0 z-20">
+        <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 h-16 lg:h-20 flex items-center justify-between px-4 lg:px-8 shrink-0 z-20 sticky top-0">
           <div className="flex items-center gap-3 lg:gap-4">
-            <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-2 -ml-2 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"><Menu className="w-5 h-5 lg:w-6 lg:h-6" /></button>
+            <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-2 -ml-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"><Menu className="w-6 h-6" /></button>
             <h1 className="text-base lg:text-lg font-black text-slate-800 dark:text-slate-100 uppercase tracking-tight">
               {getPageTitle(activeTab)}
             </h1>
@@ -290,8 +301,8 @@ const App: React.FC = () => {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-4 lg:px-8 py-6 lg:py-8">
-          <div className="max-w-7xl mx-auto pb-24 lg:pb-20">
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6 lg:py-8 pb-32 lg:pb-12">
             {activeTab === ViewState.DASHBOARD && (
               <Dashboard
                 appointments={appointments}
@@ -405,7 +416,7 @@ const App: React.FC = () => {
                 products={products}
                 appointments={appointments}
                 onAddProduct={p => setProducts([...products, p])}
-                onUpdateProduct={u => setProducts(products.map(p => p.id === u.id ? u : p))}
+                onUpdateProduct={u => setProducts(products.map(p => p.id === u.id ? p : u))}
                 onDeleteProduct={id => setProducts(products.filter(p => p.id !== id))}
               />
             )}
@@ -438,7 +449,7 @@ const App: React.FC = () => {
         </div>
 
         {/* Mobile Bottom Navigation */}
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-2 py-2 flex items-center justify-around z-40 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+        <nav className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-slate-900/90 backdrop-blur-lg border border-white/10 px-2 py-2 flex items-center justify-around z-40 rounded-3xl shadow-2xl">
           <MobileNavItem icon={LayoutDashboard} active={activeTab === ViewState.DASHBOARD} onClick={() => handleNavClick(ViewState.DASHBOARD)} />
           <MobileNavItem icon={CalendarIcon} active={activeTab === ViewState.CALENDAR} onClick={() => handleNavClick(ViewState.CALENDAR)} />
           <MobileNavItem icon={Users} active={activeTab === ViewState.CLIENTS} onClick={() => handleNavClick(ViewState.CLIENTS)} />
@@ -453,18 +464,18 @@ const App: React.FC = () => {
 const MobileNavItem = ({ icon: Icon, active, onClick, isSpecial }: any) => (
   <button
     onClick={onClick}
-    className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all relative ${active
-      ? 'text-accent'
-      : 'text-slate-400 hover:text-slate-600'
+    className={`flex flex-col items-center justify-center p-2 rounded-2xl transition-all relative ${active
+      ? 'text-white'
+      : 'text-white/40 hover:text-white/60'
       }`}
   >
-    <div className={`p-2 rounded-lg ${active ? (isSpecial ? 'bg-accent text-white' : 'bg-accent/10 text-accent') : ''}`}>
-      <Icon className="w-5 h-5" />
+    <div className={`p-2.5 rounded-xl transition-all ${active ? (isSpecial ? 'bg-accent text-white shadow-lg shadow-accent/50' : 'bg-white/10 text-white') : ''}`}>
+      <Icon className="w-5 h-5 lg:w-6 lg:h-6" />
     </div>
     {active && (
       <motion.div
         layoutId="mobile-nav-indicator"
-        className="absolute -bottom-1 w-1 h-1 bg-accent rounded-full"
+        className="absolute -bottom-1 w-1 h-1 bg-white rounded-full"
       />
     )}
   </button>

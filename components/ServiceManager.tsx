@@ -105,7 +105,7 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
                   <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:bg-accent group-hover:text-white transition-all">
                     <Scissors className="w-5 h-5" />
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => handleOpenForm(service)} className="p-2 text-slate-400 hover:text-accent"><Edit className="w-4 h-4" /></button>
                     <button onClick={() => { if (window.confirm('Excluir serviço?')) onDeleteService(service.id) }} className="p-2 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                   </div>

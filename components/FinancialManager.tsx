@@ -232,9 +232,9 @@ export const FinancialManager: React.FC<FinancialManagerProps> = ({
             </div>
           </div>
 
-          {/* History Table */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
+          {/* History Header (Desktop only) */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden min-h-0">
+            <div className="hidden lg:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
@@ -273,16 +273,46 @@ export const FinancialManager: React.FC<FinancialManagerProps> = ({
                       </td>
                     </tr>
                   ))}
-                  {filteredRecords.length === 0 && (
-                    <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center text-slate-400 text-sm italic">
-                        Nenhum registro encontrado para este período.
-                      </td>
-                    </tr>
-                  )}
                 </tbody>
               </table>
             </div>
+
+            {/* Mobile Card List */}
+            <div className="lg:hidden divide-y divide-slate-100 dark:divide-slate-800">
+              {filteredRecords.map((record) => (
+                <div key={record.id} className="p-4 flex flex-col gap-3">
+                  <div className="flex justify-between items-start">
+                    <div className="flex gap-3">
+                      <div className={`mt-1 p-2 rounded-lg shrink-0 ${record.type === 'income' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                        {record.type === 'income' ? <ArrowUpCircle className="w-4 h-4" /> : <ArrowDownCircle className="w-4 h-4" />}
+                      </div>
+                      <div>
+                        <p className="text-sm font-black text-slate-800 dark:text-slate-200">{record.description}</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{formatDate(record.date)} • {record.category}</p>
+                        {record.appointmentId && (
+                          <p className="text-[8px] text-accent font-black uppercase tracking-widest mt-1">Automático</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-sm font-black ${record.type === 'income' ? 'text-emerald-600' : 'text-red-600'}`}>
+                        {record.type === 'income' ? '+' : '-'} {formatCurrency(record.amount)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-50 dark:border-slate-800/50">
+                    <button onClick={() => handleOpenForm(record.type, record)} className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-lg text-[10px] font-black uppercase">Editar</button>
+                    <button onClick={() => { if(window.confirm('Excluir registro?')) onDelete(record.id) }} className="px-3 py-1.5 bg-red-50 text-red-500 rounded-lg text-[10px] font-black uppercase">Excluir</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredRecords.length === 0 && (
+              <div className="px-6 py-12 text-center text-slate-400 text-sm italic">
+                Nenhum registro encontrado para este período.
+              </div>
+            )}
           </div>
         </>
       )}

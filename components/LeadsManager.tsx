@@ -131,40 +131,40 @@ export const LeadsManager: React.FC<LeadsManagerProps> = ({
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-14rem)] overflow-hidden animate-fade-in">
+    <div className="flex flex-col lg:flex-row gap-6 h-full lg:h-[calc(100vh-14rem)] overflow-hidden animate-fade-in">
       
-      {/* Sidebar Filters */}
-      <div className="w-full lg:w-64 space-y-2 shrink-0 overflow-y-auto pr-2">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 ml-4">Status dos Leads</h3>
+      {/* Filters: Sidebar on Desktop, Horizontal Scroll on Mobile */}
+      <div className="w-full lg:w-64 flex lg:flex-col gap-2 shrink-0 overflow-x-auto lg:overflow-y-auto pb-2 lg:pb-0 scrollbar-hide px-1">
+        <h3 className="hidden lg:block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 ml-4">Status dos Leads</h3>
         
         <button
           onClick={() => setActiveFilter('all')}
-          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${activeFilter === 'all' ? 'bg-accent text-white shadow-lg shadow-accent/20' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'}`}
+          className={`flex items-center justify-between px-4 py-2.5 lg:py-3 rounded-xl lg:w-full transition-all shrink-0 ${activeFilter === 'all' ? 'bg-accent text-white shadow-lg shadow-accent/20' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'}`}
         >
-          <div className="flex items-center gap-3">
-            <MessageSquare className="w-4 h-4" />
-            <span className="text-sm font-bold">Todos os Leads</span>
+          <div className="flex items-center gap-2 lg:gap-3">
+            <MessageSquare className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
+            <span className="text-[10px] lg:text-sm font-black uppercase lg:normal-case tracking-wider lg:tracking-normal whitespace-nowrap">Todos</span>
           </div>
-          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${activeFilter === 'all' ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800'}`}>{getStatusCount('all')}</span>
+          <span className={`hidden lg:inline text-[10px] font-black px-2 py-0.5 rounded-full ${activeFilter === 'all' ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800'}`}>{getStatusCount('all')}</span>
         </button>
 
         {(['novo', 'em_contato', 'negociando', 'confirmado', 'perdido'] as LeadStatus[]).map(status => (
           <button
             key={status}
             onClick={() => setActiveFilter(status)}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${activeFilter === status ? statusConfig[status].bg + ' ' + statusConfig[status].color : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'}`}
+            className={`flex items-center justify-between px-4 py-2.5 lg:py-3 rounded-xl lg:w-full transition-all shrink-0 ${activeFilter === status ? statusConfig[status].bg + ' ' + statusConfig[status].color : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'}`}
           >
-            <div className="flex items-center gap-3">
-              <div className={`w-2 h-2 rounded-full ${activeFilter === status ? 'bg-current' : statusConfig[status].bg.replace('50', '500')}`} />
-              <span className="text-sm font-bold">{statusConfig[status].label}</span>
+            <div className="flex items-center gap-2 lg:gap-3">
+              <div className={`w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full ${activeFilter === status ? 'bg-current' : statusConfig[status].bg.replace('50', '500')}`} />
+              <span className="text-[10px] lg:text-sm font-black uppercase lg:normal-case tracking-wider lg:tracking-normal whitespace-nowrap">{statusConfig[status].label}</span>
             </div>
-            <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${activeFilter === status ? 'bg-current/10' : 'bg-slate-100 dark:bg-slate-800'}`}>{getStatusCount(status)}</span>
+            <span className={`hidden lg:inline text-[10px] font-black px-2 py-0.5 rounded-full ${activeFilter === status ? 'bg-current/10' : 'bg-slate-100 dark:bg-slate-800'}`}>{getStatusCount(status)}</span>
           </button>
         ))}
       </div>
 
       {/* Main Content (WhatsApp Style List) */}
-      <div className="flex-1 flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+      <div className="flex-1 flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden min-h-0">
         
         {/* Header/Search */}
         <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
@@ -176,22 +176,22 @@ export const LeadsManager: React.FC<LeadsManagerProps> = ({
                 placeholder="Buscar por nome ou celular..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-sm font-medium focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-sm font-medium focus:ring-2 focus:ring-accent/20 transition-all shadow-sm"
               />
             </div>
             <button
               onClick={() => handleOpenModal()}
               className="w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-accent/20 hover:brightness-110 active:scale-95 transition-all"
             >
-              <Plus className="w-4 h-4" /> Novo Lead
+              <Plus className="w-4 h-4" /> <span className="sm:inline">Novo Lead</span>
             </button>
           </div>
         </div>
 
         {/* List */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pb-4">
           {filteredLeads.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center p-8">
+            <div className="h-full flex flex-col items-center justify-center text-center p-8 min-h-[300px]">
               <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 mb-4">
                 <Users className="w-8 h-8" />
               </div>
@@ -210,60 +210,64 @@ export const LeadsManager: React.FC<LeadsManagerProps> = ({
                 return (
                   <div 
                     key={lead.id} 
-                    className="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group relative cursor-pointer"
+                    className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 lg:p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group relative cursor-pointer"
                     onClick={() => handleOpenModal(lead)}
                   >
-                    {/* Avatar */}
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-black text-white shrink-0 shadow-sm ${config.bg.replace('50', '500')}`}>
-                      {initials}
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-0.5">
-                        <h4 className="font-black text-slate-800 dark:text-slate-100 truncate pr-4">{lead.name}</h4>
-                        <span className="text-[9px] font-medium text-slate-400 shrink-0">
-                          {new Date(lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-                        </span>
+                    <div className="flex items-center gap-4 flex-1">
+                      {/* Avatar */}
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-black text-white shrink-0 shadow-sm transition-transform group-hover:scale-110 ${config.bg.replace('50', '500')}`}>
+                        {initials}
                       </div>
-                      
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border ${config.bg} ${config.color} ${config.border}`}>
-                          {config.label}
-                        </span>
-                        <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 text-[8px] font-black uppercase tracking-widest border border-slate-200 dark:border-slate-700">
-                          <SourceIcon className="w-2.5 h-2.5" /> {lead.source}
-                        </span>
-                        {lead.serviceInterest && (
-                          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-[8px] font-black uppercase tracking-widest border border-purple-100 dark:border-purple-800">
-                            <Scissors className="w-2.5 h-2.5" /> {lead.serviceInterest}
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-0.5">
+                          <h4 className="font-black text-slate-800 dark:text-slate-100 truncate pr-4 text-sm sm:text-base">{lead.name}</h4>
+                          <span className="text-[10px] font-bold text-slate-400 shrink-0">
+                            {new Date(lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                           </span>
-                        )}
-                      </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border ${config.bg} ${config.color} ${config.border}`}>
+                            {config.label}
+                          </span>
+                          <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 text-[8px] font-black uppercase tracking-widest border border-slate-200 dark:border-slate-700">
+                            <SourceIcon className="w-2.5 h-2.5" /> {lead.source}
+                          </span>
+                          {lead.serviceInterest && (
+                            <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-[8px] font-black uppercase tracking-widest border border-purple-100 dark:border-purple-800">
+                              <Scissors className="w-2.5 h-2.5" /> {lead.serviceInterest}
+                            </span>
+                          )}
+                        </div>
 
-                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
-                        {lead.notes || 'Sem observações adicionais...'}
-                      </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 italic">
+                          {lead.notes || 'Sem observações...'}
+                        </p>
+                      </div>
                     </div>
 
-                    {/* Actions Overlay/Buttons */}
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 bottom-4">
+                    {/* Actions - Always visible on mobile, hover on desktop */}
+                    <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity justify-end">
                       {lead.phone && (
                         <button 
                           onClick={(e) => { e.stopPropagation(); openWhatsApp(lead.phone); }}
-                          className="p-2 bg-emerald-500 text-white rounded-lg hover:brightness-110 shadow-lg shadow-emerald-500/20 active:scale-90 transition-all"
+                          className="flex-1 sm:flex-none p-2.5 bg-emerald-500 text-white rounded-xl hover:brightness-110 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                           title="Abrir WhatsApp"
                         >
                           <MessageCircle className="w-4 h-4" />
+                          <span className="sm:hidden text-[10px] font-black uppercase tracking-widest">WhatsApp</span>
                         </button>
                       )}
                       {lead.status !== 'confirmado' && (
                         <button 
                           onClick={(e) => { e.stopPropagation(); onConvertToAppointment(lead); }}
-                          className="p-2 bg-accent text-white rounded-lg hover:brightness-110 shadow-lg shadow-accent/20 active:scale-90 transition-all"
+                          className="flex-1 sm:flex-none p-2.5 bg-accent text-white rounded-xl hover:brightness-110 shadow-lg shadow-accent/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                           title="Converter em Agendamento"
                         >
                           <TrendingUp className="w-4 h-4" />
+                          <span className="sm:hidden text-[10px] font-black uppercase tracking-widest">Converter</span>
                         </button>
                       )}
                     </div>

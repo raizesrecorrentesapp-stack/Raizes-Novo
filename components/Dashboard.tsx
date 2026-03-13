@@ -152,22 +152,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
   return (
     <div className="space-y-6 animate-slide-up">
       {/* Sub-tab Navigation */}
-      <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl w-fit mb-2">
+      <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl w-full sm:w-fit mb-2 overflow-x-auto scrollbar-hide">
         <button
           onClick={() => setActiveSubTab('overview')}
-          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeSubTab === 'overview' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 whitespace-nowrap ${activeSubTab === 'overview' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
         >
           <LayoutDashboard className="w-3.5 h-3.5" /> Resumo
         </button>
         <button
           onClick={() => setActiveSubTab('leads')}
-          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeSubTab === 'leads' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 whitespace-nowrap ${activeSubTab === 'leads' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
         >
           <MessageSquare className="w-3.5 h-3.5" /> Leads
         </button>
         <button
           onClick={() => setActiveSubTab('analytics')}
-          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeSubTab === 'analytics' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 whitespace-nowrap ${activeSubTab === 'analytics' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
         >
           <BarChart2 className="w-3.5 h-3.5" /> Análise BCG
         </button>
@@ -459,16 +459,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
 };
 
 const StatCard = ({ icon: Icon, label, value, trend, color, bg }: any) => (
-  <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+  <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
     <div className="flex items-center justify-between mb-3 sm:mb-4">
       <div className={`p-1.5 sm:p-2 rounded-xl ${bg} ${color}`}>
-        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+        <Icon className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
       </div>
-      <span className={`text-[8px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full ${bg} ${color}`}>
+      <span className={`text-[7px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full ${bg} ${color} whitespace-nowrap`}>
         {trend}
       </span>
     </div>
-    <p className="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] mb-0.5 sm:mb-1">{label}</p>
-    <p className="text-lg sm:text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight">{value}</p>
+    <div className="space-y-0.5 sm:space-y-1">
+      <p className="text-[7px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] line-clamp-1">{label}</p>
+      <p className="text-sm sm:text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight truncate">{value}</p>
+    </div>
   </div>
 );

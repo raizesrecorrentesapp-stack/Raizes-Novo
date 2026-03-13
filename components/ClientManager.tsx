@@ -232,13 +232,13 @@ export const ClientManager: React.FC<ClientManagerProps> = ({
             {[
               { id: 'all', label: 'Todos', icon: User, count: clients.length },
               { id: 'active', label: 'Em dia', icon: CheckCircle2, count: clients.filter(c => getClientStats(c.id).maintenanceStatus === 'active').length },
-              { id: 'maintenance', label: 'Manutenção', icon: Clock, count: clients.filter(c => getClientStats(c.id).maintenanceStatus === 'maintenance').length },
-              { id: 'inactive', label: 'Atrasados', icon: AlertTriangle, count: clients.filter(c => getClientStats(c.id).maintenanceStatus === 'inactive').length }
+              { id: 'maintenance', label: 'Manut.', icon: Clock, count: clients.filter(c => getClientStats(c.id).maintenanceStatus === 'maintenance').length },
+              { id: 'inactive', label: 'Atras.', icon: AlertTriangle, count: clients.filter(c => getClientStats(c.id).maintenanceStatus === 'inactive').length }
             ].map(filter => (
               <button
                 key={filter.id}
                 onClick={() => setFilterStatus(filter.id as any)}
-                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all border whitespace-nowrap ${
+                className={`px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all border whitespace-nowrap ${
                   filterStatus === filter.id 
                     ? 'bg-accent text-white border-accent shadow-md' 
                     : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300'
@@ -356,7 +356,7 @@ export const ClientManager: React.FC<ClientManagerProps> = ({
 
             <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
               <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Resumo Financeiro</h4>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Investido</p>
                   <p className="text-xl font-black text-emerald-600">{formatCurrency(getClientStats(selectedClient.id).totalSpent)}</p>

@@ -7,6 +7,7 @@ import {
   Calendar as CalendarIcon,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Plus,
   Clock,
   User,
@@ -48,6 +49,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const [projectionMode, setProjectionMode] = useState<'day' | 'week' | 'month'>('day');
   const [currentMonth, setCurrentMonth] = useState(() => parseLocalDate(getLocalISODate()));
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProjectionCollapsed, setIsProjectionCollapsed] = useState(true);
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
   const [clientType, setClientType] = useState<'existing' | 'new'>('existing');
   const [newClientData, setNewClientData] = useState({ name: '', phone: '' });
@@ -250,10 +252,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
         <button
           onClick={() => handleOpenModal()}
-          className="w-full lg:w-auto lg:absolute lg:right-0 px-6 sm:px-8 py-3 sm:py-3.5 bg-accent text-white rounded-2xl font-black uppercase text-[9px] sm:text-[10px] tracking-[0.15em] flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
+          className="w-full lg:w-auto lg:absolute lg:right-0 px-6 sm:px-8 py-4 sm:py-3.5 bg-accent text-white rounded-2xl font-black uppercase text-[10px] sm:text-[10px] tracking-[0.15em] flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
         >
           <div className="p-1 bg-white/20 rounded-lg">
-            <Plus className="w-3.5 h-3.5 sm:w-4 h-4" />
+            <Plus className="w-4 h-4" />
           </div>
           Novo Agendamento
         </button>
@@ -438,68 +440,98 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </div>
 
           <div className="space-y-4 sm:space-y-6">
-            <div className="bg-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-xl">
-              <div className="flex items-center justify-between mb-6">
-                <h4 className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Projeção</h4>
-                <div className="flex bg-slate-800 rounded-lg p-1">
-                  {(['day', 'week', 'month'] as const).map(m => (
-                    <button
-                      key={m}
-                      onClick={() => setProjectionMode(m)}
-                      className={`px-3 py-1.5 rounded text-[8px] sm:text-[9px] font-bold uppercase tracking-widest transition-colors ${
-                        projectionMode === m ? 'bg-accent text-white' : 'text-slate-400 hover:text-slate-200'
-                      }`}
-                    >
-                      {m === 'day' ? 'Dia' : m === 'week' ? 'Sem' : 'Mês'}
-                    </button>
-                  ))}
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-xl overflow-hidden">
+              <div 
+                className="flex items-center justify-between mb-4 lg:mb-6 cursor-pointer lg:cursor-default"
+                onClick={() => window.innerWidth < 1024 && setIsProjectionCollapsed(!isProjectionCollapsed)}
+              >
+                <div className="flex items-center gap-3">
+                  <TrendingUp className="w-4 h-4 text-accent" />
+                  <h4 className="text-[10px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Projeção</h4>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="hidden lg:flex bg-slate-800 rounded-lg p-1">
+                    {(['day', 'week', 'month'] as const).map(m => (
+                      <button
+                        key={m}
+                        onClick={(e) => { e.stopPropagation(); setProjectionMode(m); }}
+                        className={`px-3 py-1.5 rounded text-[8px] sm:text-[9px] font-bold uppercase tracking-widest transition-colors ${
+                          projectionMode === m ? 'bg-accent text-white' : 'text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        {m === 'day' ? 'Dia' : m === 'week' ? 'Sem' : 'Mês'}
+                      </button>
+                    ))}
+                  </div>
+                  <button className="lg:hidden p-1 text-slate-500">
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isProjectionCollapsed ? '' : 'rotate-180'}`} />
+                  </button>
                 </div>
               </div>
 
-              {(() => {
-                let projectedApps = appointmentsForDate;
-                if (projectionMode === 'week') {
-                  const curr = parseLocalDate(selectedDate);
-                  const start = new Date(curr);
-                  start.setDate(curr.getDate() - curr.getDay());
-                  const end = new Date(start);
-                  end.setDate(start.getDate() + 6);
-                  
-                  projectedApps = appointments.filter(a => {
-                    const d = parseLocalDate(a.date);
-                    return d >= start && d <= end;
-                  });
-                } else if (projectionMode === 'month') {
-                  const [y, m] = selectedDate.split('-');
-                  projectedApps = appointments.filter(a => a.date.startsWith(`${y}-${m}`));
-                }
-
-                return (
-                  <div className="space-y-3 sm:space-y-4">
-                    <div className="flex justify-between items-end">
-                      <span className="text-[9px] sm:text-[10px] font-bold uppercase text-slate-400">Total Previsto</span>
-                      <span className="text-lg sm:text-xl font-black">{formatCurrency(projectedApps.reduce((acc, a) => acc + a.totalValue, 0))}</span>
-                    </div>
-                    <div className="flex justify-between items-end">
-                      <span className="text-[9px] sm:text-[10px] font-bold uppercase text-slate-400">Total Recebido</span>
-                      <span className="text-lg sm:text-xl font-black text-emerald-400">
-                        {formatCurrency(projectedApps.filter(a => a.status === 'Concluído').reduce((acc, a) => acc + a.totalValue, 0))}
-                      </span>
-                    </div>
-                    <div className="pt-4 border-t border-white/10 grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-[8px] sm:text-[9px] font-bold uppercase text-slate-500">Agendados</p>
-                        <p className="text-base sm:text-lg font-black">{projectedApps.filter(a => a.status === 'Agendado' || a.status === 'Confirmado').length}</p>
-                      </div>
-                      <div>
-                        <p className="text-[8px] sm:text-[9px] font-bold uppercase text-slate-500">Concluídos</p>
-                        <p className="text-base sm:text-lg font-black">{projectedApps.filter(a => a.status === 'Concluído').length}</p>
-                      </div>
-                    </div>
+              <div className={`transition-all duration-300 ${isProjectionCollapsed ? 'max-h-0 lg:max-h-[500px] opacity-0 lg:opacity-100' : 'max-h-[500px] opacity-100'}`}>
+                {/* Mobile specific toggle for projection mode inside expanded state */}
+                <div className="lg:hidden flex bg-slate-800 rounded-lg p-1 mb-6">
+                    {(['day', 'week', 'month'] as const).map(m => (
+                      <button
+                        key={m}
+                        onClick={() => setProjectionMode(m)}
+                        className={`flex-1 py-2 rounded text-[9px] font-black uppercase tracking-widest transition-colors ${
+                          projectionMode === m ? 'bg-accent text-white shadow-lg' : 'text-slate-400'
+                        }`}
+                      >
+                        {m === 'day' ? 'Dia' : m === 'week' ? 'Semana' : 'Mês'}
+                      </button>
+                    ))}
                   </div>
-                );
-              })()}
+
+                {(() => {
+                  let projectedApps = appointmentsForDate;
+                  if (projectionMode === 'week') {
+                    const curr = parseLocalDate(selectedDate);
+                    const start = new Date(curr);
+                    start.setDate(curr.getDate() - curr.getDay());
+                    const end = new Date(start);
+                    end.setDate(start.getDate() + 6);
+                    
+                    projectedApps = appointments.filter(a => {
+                      const d = parseLocalDate(a.date);
+                      return d >= start && d <= end;
+                    });
+                  } else if (projectionMode === 'month') {
+                    const [y, m] = selectedDate.split('-');
+                    projectedApps = appointments.filter(a => a.date.startsWith(`${y}-${m}`));
+                  }
+
+                  return (
+                    <div className="space-y-4 sm:space-y-4">
+                      <div className="flex justify-between items-end">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase text-slate-400">Total Previsto</span>
+                        <span className="text-xl sm:text-xl font-black">{formatCurrency(projectedApps.reduce((acc, a) => acc + a.totalValue, 0))}</span>
+                      </div>
+                      <div className="flex justify-between items-end">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase text-slate-400">Total Recebido</span>
+                        <span className="text-xl sm:text-xl font-black text-emerald-400">
+                          {formatCurrency(projectedApps.filter(a => a.status === 'Concluído').reduce((acc, a) => acc + a.totalValue, 0))}
+                        </span>
+                      </div>
+                      <div className="pt-4 border-t border-white/10 grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-[9px] sm:text-[9px] font-bold uppercase text-slate-500">Agendados</p>
+                          <p className="text-lg sm:text-lg font-black">{projectedApps.filter(a => a.status === 'Agendado' || a.status === 'Confirmado').length}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] sm:text-[9px] font-bold uppercase text-slate-500">Concluídos</p>
+                          <p className="text-lg sm:text-lg font-black">{projectedApps.filter(a => a.status === 'Concluído').length}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
+          </div>
           </div>
         </div>
       )}

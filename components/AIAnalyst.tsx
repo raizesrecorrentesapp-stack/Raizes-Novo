@@ -76,7 +76,7 @@ export const AIAnalyst: React.FC<AIAnalystProps> = ({ appointments, clients, pro
   ];
 
   return (
-    <div className="flex flex-col h-[600px] bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden animate-fade-in">
+    <div className="flex flex-col h-[500px] sm:h-[600px] lg:h-[700px] bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden animate-fade-in">
       {/* Header */}
       <div className="bg-accent p-4 flex items-center gap-3">
         <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">

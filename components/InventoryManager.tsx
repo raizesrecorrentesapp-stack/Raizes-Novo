@@ -81,7 +81,7 @@ export const InventoryManager: React.FC<InventoryManagerProps> = ({
     <div className="space-y-6 animate-fade-in">
       {view === 'list' && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="bg-accent rounded-2xl p-6 text-white shadow-xl flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] mb-1">Valor Total em Estoque</p>
@@ -100,7 +100,7 @@ export const InventoryManager: React.FC<InventoryManagerProps> = ({
                 <AlertTriangle className="w-6 h-6 text-red-500" />
               </div>
             </div>
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between sm:col-span-2 lg:col-span-1">
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Total de Produtos</p>
                 <p className="text-2xl font-black text-slate-800 dark:text-slate-100">{products.length}</p>
@@ -145,7 +145,7 @@ export const InventoryManager: React.FC<InventoryManagerProps> = ({
                     <div className={`p-3 rounded-xl ${isLowStock ? 'bg-red-50 text-red-500' : 'bg-slate-50 text-slate-400'} dark:bg-slate-800 group-hover:bg-accent group-hover:text-white transition-all`}>
                       <Package className="w-5 h-5" />
                     </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
                       <button onClick={() => handleOpenForm(product)} className="p-2 text-slate-400 hover:text-accent"><Edit className="w-4 h-4" /></button>
                       <button onClick={() => { if(window.confirm('Excluir produto?')) onDeleteProduct(product.id) }} className="p-2 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                     </div>
