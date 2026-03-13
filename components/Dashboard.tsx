@@ -15,7 +15,8 @@ import {
   XCircle,
   BarChart2,
   MessageSquare,
-  LayoutDashboard
+  LayoutDashboard,
+  CheckCircle2
 } from 'lucide-react';
 import { LeadsManager } from './LeadsManager';
 import { ServiceAnalytics } from './ServiceAnalytics';

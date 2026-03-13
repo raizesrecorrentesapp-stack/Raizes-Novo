@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --accent-color: #db2777; /* Default pink fallback */
+}
+
+/* Base styles to match the index.html configuration */
+body {
+  @apply bg-slate-50 text-slate-900 font-sans;
+}
+
+.dark body {
+  @apply bg-slate-950 text-slate-100;
+}
+
+/* Custom accent utilities */
+.bg-accent { background-color: var(--accent-color) !important; }
+.text-accent { color: var(--accent-color) !important; }
+.border-accent { border-color: var(--accent-color) !important; }
+.ring-accent { --tw-ring-color: var(--accent-color) !important; }
+
+/* Custom Simplefy colors defined in index.html */
+.bg-simplefy-primary { background-color: #0F2A44; }
+.text-simplefy-primary { color: #0F2A44; }
+.bg-simplefy-secondary { background-color: #2B2E34; }
+.text-simplefy-secondary { color: #2B2E34; }

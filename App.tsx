@@ -219,8 +219,6 @@ const App: React.FC = () => {
       case ViewState.INVENTORY: return 'Estoque';
       case ViewState.FINANCE: return 'Financeiro';
       case ViewState.AI_ANALYST: return 'Analista IA';
-      case ViewState.ANALYTICS: return 'Análise de Serviços';
-      case ViewState.LEADS: return 'Gestão de Leads';
       case ViewState.PROFILE: return 'Perfil';
       case ViewState.SETTINGS: return 'Configurações';
       default: return tab;
@@ -304,7 +302,7 @@ const App: React.FC = () => {
                 professionals={professionals}
                 settings={appSettings}
                 userName={userProfile.name}
-                onNavigate={setActiveTab}
+                onNavigate={handleNavClick}
                 leads={leads}
                 onAddLead={l => setLeads([...leads, l])}
                 onUpdateLead={u => setLeads(leads.map(l => l.id === u.id ? u : l))}
